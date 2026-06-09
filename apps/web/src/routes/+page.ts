@@ -1,9 +1,9 @@
 import type { PageLoad } from './$types';
+import { client } from '$lib/api';
 
-export const load: PageLoad = async ({ fetch }) => {
-	const server = import.meta.env.VITE_SERVER_URL || 'http://localhost:8787';
+export const load: PageLoad = async () => {
 	try {
-		const res = await fetch(`${server}/api/rooms`);
+		const res = await client.api.rooms.$get();
 		if (res.ok) {
 			const rooms = await res.json();
 			return { rooms };

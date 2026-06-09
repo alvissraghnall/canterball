@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 	import type { GameState, Team, Point } from '@canterball/shared';
 	import { FIELD, PIECE, SHOT } from '@canterball/shared';
 	import { CANVAS, fieldToCanvas, canvasToField } from '$lib/game/constants';
@@ -43,10 +43,10 @@
 		fieldW = CANVAS.WIDTH - CANVAS.PADDING * 2;
 		fieldH = CANVAS.HEIGHT - CANVAS.PADDING * 2;
 		animate();
-	});
 
-	onDestroy(() => {
-		if (animFrame) cancelAnimationFrame(animFrame);
+		return () => {
+			if (animFrame) cancelAnimationFrame(animFrame);
+		};
 	});
 
 	function animate() {

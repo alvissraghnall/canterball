@@ -1,112 +1,138 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { GameConnection } from '$lib/game/ws';
 	import {
-		gameState,
-		playerId,
-		playerSide,
-		playerName,
-		phase,
-		shotPath,
-		shotAnimating,
-		goalieWindowActive,
-		errorMessage,
-		isMyTurn,
+		gameState as gameStateStore,
+		playerId as playerIdStore,
+		playerSide as playerSideStore,
+		playerName as playerNameStore,
+		phase as phaseStore,
+		shotPath as shotPathStore,
+		shotAnimating as shotAnimatingStore,
+		goalieWindowActive as goalieWindowActiveStore,
+		errorMessage as errorMessageStore,
+		isMyTurn as isMyTurnStore,
 		resetStores,
 	} from '$lib/stores/game';
-	import type { ServerOutMessage } from '@canterball/shared';
+	import type { ServerOutMessage, GameState, Team, Point } from '@canterball/shared';
 	import GameBoard from '$lib/components/GameBoard.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 
-	let conn: GameConnection;
+	// Local Svelte 5 state to avoid $store auto-subscription crashes
+	let localGameState = $state<GameState | null>(null);
+	let localPhase = $state<'lobby' | 'playing' | 'finished'>('lobby');
+	let localPlayerSide = $state<Team | null>(null);
+	let localIsMyTurn = $state(false);
+	let localShotPath = $state<Point[]>([]);
+	let localShotAnimating = $state(false);
+	let localGoalieWindowActive = $state(false);
+	let localErrorMessage = $state<string | null>(null);
+
+	let conn: GameConnection | null = null;
 
 	onMount(() => {
-		if (data.initialState) {
-			gameState.set(data.initialState);
-			phase.set('playing');
+		const unsubscribers: (() => void)[] = [];
+
+		// Sync local state from stores
+		unsubscribers.push(gameStateStore.subscribe((v) => (localGameState = v)));
+		unsubscribers.push(phaseStore.subscribe((v) => (localPhase = v)));
+		unsubscribers.push(playerSideStore.subscribe((v) => (localPlayerSide = v)));
+		unsubscribers.push(isMyTurnStore.subscribe((v) => (localIsMyTurn = v)));
+		unsubscribers.push(shotPathStore.subscribe((v) => (localShotPath = v)));
+		unsubscribers.push(shotAnimatingStore.subscribe((v) => (localShotAnimating = v)));
+		unsubscribers.push(goalieWindowActiveStore.subscribe((v) => (localGoalieWindowActive = v)));
+		unsubscribers.push(errorMessageStore.subscribe((v) => (localErrorMessage = v)));
+
+		if (data.initialState && (data.initialState as any).pieces) {
+			gameStateStore.set(data.initialState as GameState);
+			phaseStore.set('playing');
+		} else if (data.initialState && (data.initialState as any).phase === 'IDLE') {
+			phaseStore.set('lobby');
 		}
 
-		playerName.set(data.name);
+		playerNameStore.set(data.name);
 		conn = new GameConnection();
 		conn.connect(data.roomId, data.name);
 		conn.onMessage(handleMessage);
-	});
 
-	onDestroy(() => {
-		conn?.disconnect();
-		resetStores();
-	});
+		function handleMessage(msg: ServerOutMessage) {
+			switch (msg.type) {
+				case 'ROOM_JOINED':
+					playerIdStore.set(msg.playerId);
+					playerSideStore.set(msg.playerSide);
+					break;
 
-	function handleMessage(msg: ServerOutMessage) {
-		switch (msg.type) {
-			case 'ROOM_JOINED':
-				playerId.set(msg.playerId);
-				playerSide.set(msg.playerSide);
-				break;
+				case 'STATE_UPDATE':
+					gameStateStore.set(msg.state);
+					phaseStore.set('playing');
+					break;
 
-			case 'STATE_UPDATE':
-				gameState.set(msg.state);
-				phase.set('playing');
-				break;
+				case 'GOALIE_WINDOW':
+					goalieWindowActiveStore.set(true);
+					setTimeout(() => goalieWindowActiveStore.set(false), msg.durationMs);
+					break;
 
-			case 'GOALIE_WINDOW':
-				goalieWindowActive.set(true);
-				setTimeout(() => goalieWindowActive.set(false), msg.durationMs);
-				break;
+				case 'SHOT_RESOLVED': {
+					const path = msg.path.map((p) => p);
+					shotPathStore.set(path);
+					shotAnimatingStore.set(true);
+					setTimeout(() => {
+						shotAnimatingStore.set(false);
+						shotPathStore.set([]);
+					}, 2000);
+					break;
+				}
 
-			case 'SHOT_RESOLVED': {
-				const path = msg.path.map((p) => p);
-				shotPath.set(path);
-				shotAnimating.set(true);
-				setTimeout(() => {
-					shotAnimating.set(false);
-					shotPath.set([]);
-				}, 2000);
-				break;
+				case 'GAME_OVER':
+					phaseStore.set('finished');
+					break;
+
+				case 'ERROR':
+					errorMessageStore.set(msg.message);
+					setTimeout(() => errorMessageStore.set(null), 3000);
+					break;
+
+				case 'OPPONENT_DISCONNECTED':
+					errorMessageStore.set('Opponent disconnected');
+					setTimeout(() => goto('/'), 3000);
+					break;
 			}
-
-			case 'GAME_OVER':
-				phase.set('finished');
-				break;
-
-			case 'ERROR':
-				errorMessage.set(msg.message);
-				setTimeout(() => errorMessage.set(null), 3000);
-				break;
-
-			case 'OPPONENT_DISCONNECTED':
-				errorMessage.set('Opponent disconnected');
-				setTimeout(() => goto('/'), 3000);
-				break;
 		}
-	}
+
+		// Use the returned cleanup function from onMount as suggested by Svelte 5 docs
+		return () => {
+			unsubscribers.forEach((unsub) => unsub());
+			if (conn) conn.disconnect();
+			resetStores();
+		};
+	});
 
 	function handleMovePiece(pieceId: string, x: number, y: number) {
-		conn.send({ type: 'MOVE_PIECE', pieceId, targetX: x, targetY: y });
+		if (conn) conn.send({ type: 'MOVE_PIECE', pieceId, targetX: x, targetY: y });
 	}
 
 	function handleDeclareShot(pieceId: string, targetX: number, targetY: number, power: number) {
-		conn.send({ type: 'DECLARE_SHOT', pieceId, targetX, targetY, power });
+		if (conn) conn.send({ type: 'DECLARE_SHOT', pieceId, targetX, targetY, power });
 	}
 
 	function handleRepositionGoalie(x: number, y: number) {
-		conn.send({ type: 'REPOSITION_GOALIE', x, y });
+		if (conn) conn.send({ type: 'REPOSITION_GOALIE', x, y });
 	}
 </script>
 
 <div class="game-page">
-	{#if $phase === 'finished'}
+	{#if localPhase === 'finished'}
 		<div class="overlay">
 			<div class="modal">
 				<h2>Game Over</h2>
-				{#if $gameState}
+				{#if localGameState}
 					<p>
-						{$gameState.homePlayerName}
-						{$gameState.score[0]} - {$gameState.score[1]}
-						{$gameState.awayPlayerName}
+						{localGameState.homePlayerName}
+						{localGameState.score[0]} - {localGameState.score[1]}
+						{localGameState.awayPlayerName}
 					</p>
 				{/if}
 				<button onclick={() => goto('/')}>Back to Lobby</button>
@@ -114,38 +140,38 @@
 		</div>
 	{/if}
 
-	{#if $errorMessage}
-		<div class="toast">{$errorMessage}</div>
+	{#if localErrorMessage}
+		<div class="toast">{localErrorMessage}</div>
 	{/if}
 
-	{#if $gameState}
+	{#if localGameState}
 		<div class="scorebar">
 			<span class="home"
-				>{$gameState.homePlayerName} <strong>{$gameState.score[0]}</strong></span
+				>{localGameState.homePlayerName} <strong>{localGameState.score[0]}</strong></span
 			>
 			<span class="turn-info">
-				{#if $goalieWindowActive}
+				{#if localGoalieWindowActive}
 					<span class="goalie-hint">Goalie window!</span>
-				{:else if $shotAnimating}
+				{:else if localShotAnimating}
 					<span class="shot-hint">Shot in flight...</span>
-				{:else if $phase === 'playing'}
-					{$isMyTurn ? 'Your turn' : "Opponent's turn"}
-					(turn {$gameState.turnNumber})
+				{:else if localPhase === 'playing'}
+					{localIsMyTurn ? 'Your turn' : "Opponent's turn"}
+					(turn {localGameState.turnNumber})
 				{/if}
 			</span>
 			<span class="away"
-				><strong>{$gameState.score[1]}</strong> {$gameState.awayPlayerName}</span
+				><strong>{localGameState.score[1]}</strong> {localGameState.awayPlayerName}</span
 			>
 		</div>
 	{/if}
 
 	<GameBoard
-		state={$gameState}
-		mySide={$playerSide}
-		isMyTurn={$isMyTurn}
-		shotPath={$shotPath}
-		shotAnimating={$shotAnimating}
-		goalieWindowActive={$goalieWindowActive}
+		state={localGameState}
+		mySide={localPlayerSide}
+		isMyTurn={localIsMyTurn}
+		shotPath={localShotPath}
+		shotAnimating={localShotAnimating}
+		goalieWindowActive={localGoalieWindowActive}
 		onMovePiece={handleMovePiece}
 		onDeclareShot={handleDeclareShot}
 		onRepositionGoalie={handleRepositionGoalie}

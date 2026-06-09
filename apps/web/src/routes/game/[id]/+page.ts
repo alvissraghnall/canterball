@@ -1,14 +1,15 @@
 import type { PageLoad } from './$types';
-import type { GameState } from '@canterball/shared';
+import { client } from '$lib/api';
 
-export const load: PageLoad = async ({ params, url, fetch }) => {
+export const load: PageLoad = async ({ params, url }) => {
 	const roomId = params.id;
 	const name = url.searchParams.get('name') || 'Player';
-	const server = import.meta.env.VITE_SERVER_URL || 'http://localhost:8787';
 
-	let initialState: GameState | null = null;
+	let initialState = null;
 	try {
-		const res = await fetch(`${server}/api/rooms/${roomId}`);
+		const res = await client.api.rooms[':id'].$get({
+			param: { id: roomId },
+		});
 		if (res.ok) {
 			initialState = await res.json();
 		}
@@ -19,6 +20,6 @@ export const load: PageLoad = async ({ params, url, fetch }) => {
 	return {
 		roomId,
 		name,
-		initialState
+		initialState,
 	};
 };
