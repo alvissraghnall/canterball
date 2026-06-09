@@ -1,13 +1,14 @@
 {
-  "name": "canterball",
-  "private": true,
-  "scripts": {
-    "dev:web": "pnpm --filter @canterball/web dev",
-    "dev:server": "pnpm --filter @canterball/server dev",
-    "build:web": "pnpm --filter @canterball/web build",
-    "build:server": "pnpm --filter @canterball/server build",
-    "build": "pnpm -r build",
-    "lint": "pnpm -r lint",
-    "typecheck": "pnpm -r typecheck"
-  }
+	"name": "canterball",
+	"private": true,
+	"scripts": {
+		"dev:web": "pnpm --filter @canterball/web dev",
+		"dev:server": "pnpm --filter @canterball/server dev",
+		"build:web": "pnpm --filter @canterball/web build",
+		"build:server": "pnpm --filter @canterball/server build",
+		"refresh:web": "pnpm --filter @canterball/web refresh",
+		"build": "pnpm -r build",
+		"lint": "pnpm -r lint",
+		"typecheck": "pnpm -r typecheck"
+	}
 }
