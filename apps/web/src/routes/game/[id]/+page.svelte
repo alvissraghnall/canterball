@@ -47,7 +47,7 @@
 		unsubscribers.push(errorMessageStore.subscribe((v) => (localErrorMessage = v)));
 
 		if (data.initialState && (data.initialState as any).pieces) {
-			gameStateStore.set(data.initialState as GameState);
+			gameStateStore.set(data.initialState as unknown as GameState);
 			phaseStore.set('playing');
 		} else if (data.initialState && (data.initialState as any).phase === 'IDLE') {
 			phaseStore.set('lobby');

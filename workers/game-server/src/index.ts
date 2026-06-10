@@ -39,13 +39,13 @@ const routes = app
 		return c.json(await res.json());
 	});
 
-// Separate non-RPC route for WebSockets to avoid inference issues with stub.fetch
-app.get('/ws', async (c) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _ = app.get('/ws', (c) => {
 	const roomId = c.req.query('room');
 	const name = c.req.query('name');
 
 	if (!roomId || !name) {
-		return c.json({ error: 'room and name required' }, 400);
+		return c.body('room and name required', 400);
 	}
 
 	const doId = c.env.ROOMS.idFromName(roomId);
@@ -53,11 +53,8 @@ app.get('/ws', async (c) => {
 
 	const url = new URL(c.req.url);
 	url.search = `?name=${encodeURIComponent(name)}`;
-	const doRequest = new Request(url.toString(), {
-		headers: c.req.raw.headers,
-	});
-
-	return stub.fetch(doRequest);
+	// #tw-ignore
+	return stub.fetch(new Request(url, { headers: c.req.raw.headers }) as any) as any;
 });
 
 export { RoomDO } from './room-do';

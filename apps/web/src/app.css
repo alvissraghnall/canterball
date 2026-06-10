@@ -56,10 +56,16 @@
 
 	--font-space: 'Space Grotesk', sans-serif;
 	--font-jetbrains: 'JetBrains Mono', monospace;
+	--font-inter: 'Inter', sans-serif;
+
+	--color-on-primary-bright: #2d3400;
+	--color-primary-container-bright: #424c00;
+	--color-on-primary-container-bright: #edf9a8;
 }
 
 :root {
 	--margin: 24px;
+	--pitch-margin: 24px;
 	--base: 4px;
 	--unit-2: 0.5rem;
 	--gutter: 16px;
@@ -70,6 +76,18 @@
 }
 
 /* Custom HUD Styles */
+.glass-panel {
+	background: rgba(30, 31, 32, 0.85);
+	backdrop-filter: blur(12px);
+	border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.glow-primary {
+	box-shadow: 0 0 20px rgba(209, 230, 117, 0.2);
+}
+.scanline {
+	background: linear-gradient(to bottom, transparent 50%, rgba(209, 230, 117, 0.03) 50%);
+	background-size: 100% 4px;
+}
 .pip-progress {
 	display: flex;
 	gap: 2px;

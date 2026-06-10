@@ -1,35 +1,37 @@
 <script lang="ts">
 </script>
 
-<nav class="sticky top-0 z-50 flex h-16 w-full items-center justify-between border-b border-outline-variant bg-surface px-[24px]">
+<nav
+	class="sticky top-0 z-50 flex h-16 w-full items-center justify-between border-b border-outline-variant bg-surface px-[24px]"
+>
 	<div class="flex items-center gap-4">
-		<a href="/" class="text-2xl font-bold tracking-tighter text-primary no-underline">Cantar Ball</a>
+		<a href="/" class="text-2xl font-bold tracking-tighter text-primary no-underline"
+			>Cantar Ball</a
+		>
 	</div>
 	<div class="hidden items-center gap-8 md:flex">
 		<a
 			class="border-b-2 border-primary font-jetbrains text-sm text-primary transition-colors hover:bg-surface-container-high"
-			href="#"
+			href="/"
 		>
 			Lobby
 		</a>
-		<a
+		<button
 			class="font-jetbrains text-sm text-on-surface-variant transition-colors hover:bg-surface-container-high"
-			href="#"
 		>
 			Tactics
-		</a>
+		</button>
 		<a
+			href="/history"
 			class="font-jetbrains text-sm text-on-surface-variant transition-colors hover:bg-surface-container-high"
-			href="#"
 		>
 			History
 		</a>
-		<a
+		<button
 			class="font-jetbrains text-sm text-on-surface-variant transition-colors hover:bg-surface-container-high"
-			href="#"
 		>
 			Vault
-		</a>
+		</button>
 	</div>
 	<div class="flex items-center gap-4">
 		<button class="rounded-full p-2 hover:bg-surface-container-high">
