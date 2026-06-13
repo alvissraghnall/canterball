@@ -1,9 +1,10 @@
 import type { PageLoad } from './$types';
-import { client } from '$lib/api';
+import { getClient } from '$lib/api';
 
-export const load: PageLoad = async ({ params, url }) => {
+export const load: PageLoad = async ({ params, url, fetch }) => {
 	const roomId = params.id;
 	const name = url.searchParams.get('name') || 'Player';
+	const client = getClient(fetch);
 
 	let initialState = null;
 	try {

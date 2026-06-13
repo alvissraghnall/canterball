@@ -1,7 +1,8 @@
 import type { PageLoad } from './$types';
-import { client } from '$lib/api';
+import { getClient } from '$lib/api';
 
-export const load: PageLoad = async () => {
+export const load: PageLoad = async ({ fetch }) => {
+	const client = getClient(fetch);
 	try {
 		const res = await client.api.rooms.$get();
 		if (res.ok) {
