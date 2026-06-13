@@ -4,12 +4,40 @@ import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import type { Env } from './env';
 import { RoomDB } from './db';
+import { getAuth } from './auth';
 
-const app = new Hono<{ Bindings: Env }>();
+type Variables = {
+	user: ReturnType<typeof getAuth> extends { $Infer: { Session: { user: infer U } } }
+		? U | null
+		: any;
+	session: ReturnType<typeof getAuth> extends { $Infer: { Session: { session: infer S } } }
+		? S | null
+		: any;
+};
+
+const app = new Hono<{ Bindings: Env; Variables: Variables }>();
 
 app.use('/*', cors());
 
-app.get('/api/health', (c) => c.json({ ok: true }));
+app.on(['POST', 'GET'], '/api/auth/*', (c) => {
+	const auth = getAuth(c.env);
+	return auth.handler(c.req.raw);
+});
+
+app.use('*', async (c, next) => {
+	const auth = getAuth(c.env);
+	const session = await auth.api.getSession({ headers: c.req.raw.headers });
+	if (session) {
+		c.set('user', session.user);
+		c.set('session', session.session);
+	} else {
+		c.set('user', null);
+		c.set('session', null);
+	}
+	await next();
+});
+
+app.get('/api/health', (c) => c.json({ ok: true, user: c.get('user') }));
 
 const routes = app
 	.get('/api/rooms', async (c) => {
