@@ -13,15 +13,17 @@
 	class="fixed top-0 z-50 flex h-16 w-full items-center justify-between border-b border-outline/20 bg-surface/80 px-pitch-margin shadow-sm backdrop-blur-md"
 >
 	<div class="flex items-center gap-8">
-		<a href="/" class="font-display-lg text-2xl font-bold tracking-tighter text-primary no-underline"
+		<a
+			href="/"
+			class="font-display-lg text-2xl font-bold tracking-tighter text-primary no-underline"
 			>Cantar Ball</a
 		>
 
 		<nav class="hidden items-center gap-6 md:flex">
 			<a
 				href="/"
-				class="font-label-caps border-b-2 py-1 text-[12px] font-medium tracking-widest uppercase transition-all {page.url.pathname ===
-				'/'
+				class="font-label-caps border-b-2 py-1 text-[12px] font-medium tracking-widest uppercase transition-all {page
+					.url.pathname === '/'
 					? 'border-primary text-primary'
 					: 'border-transparent text-on-surface-variant hover:text-on-surface'}"
 			>
@@ -30,7 +32,7 @@
 			<a
 				href="/lobby"
 				class="font-label-caps border-b-2 py-1 text-[12px] font-medium tracking-widest uppercase transition-all {page.url.pathname.startsWith(
-					'/lobby'
+					'/lobby',
 				)
 					? 'border-primary text-primary'
 					: 'border-transparent text-on-surface-variant hover:text-on-surface'}"
@@ -40,7 +42,7 @@
 			<a
 				href="/history"
 				class="font-label-caps border-b-2 py-1 text-[12px] font-medium tracking-widest uppercase transition-all {page.url.pathname.startsWith(
-					'/history'
+					'/history',
 				)
 					? 'border-primary text-primary'
 					: 'border-transparent text-on-surface-variant hover:text-on-surface'}"
@@ -84,8 +86,5 @@
 				Sign In
 			</a>
 		{/if}
-	</div>
-</header>
-
 	</div>
 </header>

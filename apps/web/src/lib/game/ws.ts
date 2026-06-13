@@ -10,7 +10,7 @@ export class GameConnection {
 		const isHttps = location.protocol === 'https:';
 		const protocol = isHttps ? 'wss:' : 'ws:';
 
-		let host = import.meta.env.VITE_SERVER_URL || location.host;
+		let host = import.meta.env.VITE_SERVER_URL || 'http://localhost:8787';
 
 		// Remove protocol if present in VITE_SERVER_URL
 		host = host.replace(/^https?:\/\//, '');

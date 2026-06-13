@@ -7,49 +7,50 @@ export type GamePhase = 'IDLE' | 'PLAYER_TURN' | 'SHOT_DECLARED' | 'SHOT_IN_FLIG
 export type ShotResult = 'GOAL' | 'SAVE' | 'OUT';
 
 export interface Point {
-  x: number;
-  y: number;
+	x: number;
+	y: number;
 }
 
 export interface Piece {
-  id: string;
-  team: Team;
-  type: PieceType;
-  x: number;
-  y: number;
+	id: string;
+	team: Team;
+	type: PieceType;
+	x: number;
+	y: number;
 }
 
 export interface Ball {
-  x: number;
-  y: number;
+	x: number;
+	y: number;
 }
 
 export interface GameState {
-  phase: GamePhase;
-  homePlayerId: string;
-  awayPlayerId: string;
-  homePlayerName: string;
-  awayPlayerName: string;
-  currentTurn: Team;
-  turnNumber: number;
-  pieces: Piece[];
-  ball: Ball;
-  score: [number, number];
+	phase: GamePhase;
+	homePlayerId: string;
+	awayPlayerId: string;
+	homePlayerName: string;
+	awayPlayerName: string;
+	currentTurn: Team;
+	turnNumber: number;
+	pieces: Piece[];
+	ball: Ball;
+	score: [number, number];
+	kickoffDone: boolean;
 }
 
 export interface ShotDeclaration {
-  pieceId: string;
-  target: Point;
-  power: number;
+	pieceId: string;
+	target: Point;
+	power: number;
 }
 
 export interface GoalieWindow {
-  durationMs: number;
-  deadline: number;
+	durationMs: number;
+	deadline: number;
 }
 
 export interface ShotResolution {
-  result: ShotResult;
-  path: Point[];
-  ballFinalPosition: Point;
+	result: ShotResult;
+	path: Point[];
+	ballFinalPosition: Point;
 }

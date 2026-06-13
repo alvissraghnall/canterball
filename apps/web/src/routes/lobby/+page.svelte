@@ -3,13 +3,17 @@
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
 	import { authClient } from '$lib/auth-client';
+
 	import { client } from '$lib/api';
+
+	import { getLiveRooms } from './rooms.remote';
 
 	let { data }: { data: PageData } = $props();
 
 	const session = authClient.useSession();
+	const roomsQuery = getLiveRooms();
 
-	let rooms = $derived(data.rooms || []);
+	let rooms = $derived(roomsQuery.current || data.rooms || []);
 	let onlineCount = $state(1248);
 	let tournamentTimer = $state('12:04:45');
 	let newRoomName = $state('');
@@ -22,9 +26,9 @@
 	}
 
 	async function createRoom() {
-		if (creating) return;
+		if (creating || !$session.data) return;
 		creating = true;
-		const name = $session.data?.user.name || 'Commander';
+		const name = $session.data.user.name;
 		const roomName = newRoomName.trim() || `${name}'s Tactical Grid`;
 
 		try {

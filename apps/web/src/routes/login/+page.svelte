@@ -53,6 +53,7 @@
 			onclick={loginWithGithub}
 			class="flex w-full items-center justify-center gap-3 border border-outline/30 p-3 transition-all hover:bg-surface-container"
 		>
+			<img src="https://github.com/favicon.ico" class="h-5 w-5" alt="GitHub" />
 			Continue with GitHub
 		</button>
 

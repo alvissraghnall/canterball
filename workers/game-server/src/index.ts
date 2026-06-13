@@ -17,9 +17,18 @@ type Variables = {
 
 const app = new Hono<{ Bindings: Env; Variables: Variables }>();
 
-app.use('/*', cors());
+app.use(
+	'/*',
+	cors({
+		origin: (origin) => origin,
+		allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+		allowHeaders: ['Content-Type', 'Authorization'],
+		exposeHeaders: ['Content-Length', 'Set-Cookie'],
+		credentials: true,
+	}),
+);
 
-app.on(['POST', 'GET'], '/api/auth/*', (c) => {
+app.on(['POST', 'GET', 'OPTIONS'], '/api/auth/*', (c) => {
 	const auth = getAuth(c.env);
 	return auth.handler(c.req.raw);
 });

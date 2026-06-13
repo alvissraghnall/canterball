@@ -1,7 +1,7 @@
 import { drizzle } from 'drizzle-orm/libsql';
 import { createClient } from '@libsql/client/web';
 import type { Env } from './env';
-import * as schema from './schema';
+import * as schema from './db/schema';
 import { eq, desc } from 'drizzle-orm';
 
 export function getDb(env: Env) {
@@ -20,6 +20,7 @@ export class RoomDB {
 	}
 
 	async createRoom(id: string, name: string): Promise<void> {
+		console.log(this.env);
 		const db = getDb(this.env);
 		await db.insert(schema.rooms).values({
 			id,
