@@ -1,5 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { authClient } from '$lib/auth-client';
+
+	const session = authClient.useSession();
+
+	async function logout() {
+		await authClient.signOut();
+	}
 </script>
 
 <nav
@@ -16,16 +23,18 @@
 				>
 			</div>
 			<div>
-				<div class="font-display-lg text-body-md font-bold text-on-surface">Commander</div>
+				<div class="font-display-lg text-body-md font-bold text-on-surface">
+					{$session.data?.user.name || 'Commander'}
+				</div>
 				<div class="font-label-caps text-primary text-[10px] uppercase tracking-widest">
-					Rank: Elite
+					Rank: {$session.data?.user.isAnonymous ? 'Guest' : 'Elite'}
 				</div>
 			</div>
 		</div>
 		<div class="space-y-2">
 			<a
 				class="group flex items-center gap-4 p-4 transition-all {page.url.pathname ===
-				"/lobby"
+				'/lobby'
 					? 'bg-tertiary-container/30 border-r-4 border-primary text-primary'
 					: 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'}"
 				href="/lobby"
@@ -36,14 +45,14 @@
 				>
 			</a>
 			<a
-				class="group flex items-center gap-4 p-4 transition-all {page.url.pathname === '/'
+				class="group flex items-center gap-4 p-4 transition-all {page.url.pathname === '/stats'
 					? 'bg-tertiary-container/30 border-r-4 border-primary text-primary'
 					: 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'}"
-				href="/"
+				href="/stats"
 			>
-				<span class="material-symbols-outlined">strategy</span>
+				<span class="material-symbols-outlined">query_stats</span>
 				<span class="font-label-caps text-[12px] font-medium tracking-widest uppercase"
-					>Tactics</span
+					>Stats</span
 				>
 			</a>
 			<a
@@ -71,21 +80,21 @@
 	<div class="mt-auto space-y-2 border-t border-outline/10 p-6">
 		<a
 			class="flex items-center gap-4 p-4 text-on-surface-variant transition-all hover:text-on-surface"
-			href="#"
+			href="/settings"
 		>
-			<span class="material-symbols-outlined">help_outline</span>
+			<span class="material-symbols-outlined">settings</span>
 			<span class="font-label-caps text-[12px] font-medium tracking-widest uppercase"
-				>Support</span
+				>Settings</span
 			>
 		</a>
-		<a
-			class="flex items-center gap-4 p-4 text-on-surface-variant transition-all hover:text-error"
-			href="#"
+		<button
+			onclick={logout}
+			class="flex w-full items-center gap-4 p-4 text-on-surface-variant transition-all hover:text-error cursor-pointer"
 		>
 			<span class="material-symbols-outlined">logout</span>
 			<span class="font-label-caps text-[12px] font-medium tracking-widest uppercase"
 				>Exit</span
 			>
-		</a>
+		</button>
 	</div>
 </nav>

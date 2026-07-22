@@ -80,7 +80,7 @@
 						{gameStore.gameState.awayPlayerName}
 					</p>
 				{/if}
-				<button onclick={() => goto('/')}>Back to Lobby</button>
+				<button onclick={() => goto('/lobby')}>Back to Lobby</button>
 			</div>
 		</div>
 	{/if}
@@ -90,7 +90,7 @@
 			<div class="modal">
 				<h2>Connection Lost</h2>
 				<p>Your opponent has disconnected or the connection was lost.</p>
-				<button onclick={() => goto('/')}>Back to Lobby</button>
+				<button onclick={() => goto('/lobby')}>Back to Lobby</button>
 			</div>
 		</div>
 	{/if}

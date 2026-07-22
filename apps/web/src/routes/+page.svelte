@@ -72,9 +72,10 @@
 				{/if}
 			</button>
 			<button
+				onclick={() => goto('/lobby')}
 				class="rounded-none border border-outline-variant bg-surface-container/50 px-12 py-4 font-jetbrains text-sm text-white transition-all hover:bg-surface-container"
 			>
-				VIEW TACTICS
+				BROWSE LOBBY
 			</button>
 		</div>
 	</div>
@@ -109,9 +110,10 @@
 			built. No downloads. Direct browser access.
 		</p>
 		<button
+			onclick={startSession}
 			class="rounded-none bg-primary px-16 py-5 font-jetbrains text-sm font-bold text-on-primary hover:shadow-[0_0_30px_rgba(217,249,157,0.4)]"
 		>
-			START MATCHMAKING
+			{$session.data ? 'ENTER THE ARENA' : 'PLAY AS GUEST'}
 		</button>
 	</div>
 </section>

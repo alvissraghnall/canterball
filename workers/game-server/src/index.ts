@@ -74,6 +74,28 @@ const routes = app
 		const stub = c.env.ROOMS.get(doId);
 		const res = await stub.fetch('http://do/state');
 		return c.json(await res.json());
+	})
+	.get('/api/leaderboard', async (c) => {
+		const db = new RoomDB(c.env);
+		const leaderboard = await db.getLeaderboard();
+		return c.json(leaderboard);
+	})
+	.get('/api/stats/:playerId', async (c) => {
+		const playerId = c.req.param('playerId');
+		const db = new RoomDB(c.env);
+		const stats = await db.getPlayerStats(playerId);
+		return c.json(stats);
+	})
+	.get('/api/history/:playerId', async (c) => {
+		const playerId = c.req.param('playerId');
+		const db = new RoomDB(c.env);
+		const history = await db.getMatchHistory(playerId);
+		return c.json(history);
+	})
+	.get('/api/online-count', async (c) => {
+		const db = new RoomDB(c.env);
+		const count = await db.getOnlineCount();
+		return c.json({ count });
 	});
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

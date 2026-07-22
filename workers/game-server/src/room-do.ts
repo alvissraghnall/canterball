@@ -160,6 +160,18 @@ export class RoomDO {
 				winner,
 				score: this.game.state.score,
 			});
+
+			this.db.recordMatchResult({
+				id: crypto.randomUUID(),
+				roomId: this.roomId,
+				homePlayerId: this.game.state.homePlayerId,
+				awayPlayerId: this.game.state.awayPlayerId,
+				homePlayerName: this.game.state.homePlayerName,
+				awayPlayerName: this.game.state.awayPlayerName,
+				winner,
+				homeScore: this.game.state.score[0],
+				awayScore: this.game.state.score[1],
+			}).catch((e) => console.error('Failed to record match result:', e));
 		} else {
 			this.broadcastState();
 		}

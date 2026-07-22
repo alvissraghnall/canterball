@@ -60,3 +60,16 @@ export const rooms = sqliteTable('rooms', {
 		.default('waiting'),
 	created_at: text('created_at').notNull(),
 });
+
+export const matchResults = sqliteTable('match_results', {
+	id: text('id').primaryKey(),
+	room_id: text('room_id').notNull(),
+	home_player_id: text('home_player_id').notNull(),
+	away_player_id: text('away_player_id').notNull(),
+	home_player_name: text('home_player_name').notNull(),
+	away_player_name: text('away_player_name').notNull(),
+	winner: text('winner', { enum: ['HOME', 'AWAY', 'DRAW'] }).notNull(),
+	home_score: integer('home_score').notNull(),
+	away_score: integer('away_score').notNull(),
+	created_at: text('created_at').notNull(),
+});

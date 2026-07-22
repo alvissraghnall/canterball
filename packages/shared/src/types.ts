@@ -36,4 +36,17 @@ export interface GameState {
 	kickoffDone: boolean;
 }
 
+export interface MatchResult {
+	id: string;
+	room_id: string;
+	home_player_id: string;
+	away_player_id: string;
+	home_player_name: string;
+	away_player_name: string;
+	winner: 'HOME' | 'AWAY' | 'DRAW';
+	home_score: number;
+	away_score: number;
+	created_at: string;
+}
+
 

@@ -7,16 +7,6 @@
 >
 	<a
 		class="flex flex-col items-center justify-center px-4 py-1 transition-transform active:scale-90 {page
-			.url.pathname === '/chat'
-			? 'text-primary'
-			: 'text-on-surface-variant'}"
-		href="/chat"
-	>
-		<span class="material-symbols-outlined">forum</span>
-		<span class="font-label-caps text-[10px] uppercase">Chat</span>
-	</a>
-	<a
-		class="flex flex-col items-center justify-center px-4 py-1 transition-transform active:scale-90 {page
 			.url.pathname === '/stats'
 			? 'text-primary'
 			: 'text-on-surface-variant'}"
@@ -34,6 +24,16 @@
 	>
 		<span class="material-symbols-outlined">stadium</span>
 		<span class="font-label-caps text-[10px] uppercase">Lobby</span>
+	</a>
+	<a
+		class="flex flex-col items-center justify-center px-4 py-1 transition-transform active:scale-90 {page
+			.url.pathname === '/history'
+			? 'text-primary'
+			: 'text-on-surface-variant'}"
+		href="/history"
+	>
+		<span class="material-symbols-outlined">history</span>
+		<span class="font-label-caps text-[10px] uppercase">History</span>
 	</a>
 	<a
 		class="flex flex-col items-center justify-center px-4 py-1 transition-transform active:scale-90 {page
