@@ -1,4 +1,4 @@
-import type { GameState, Point, ShotResult, Team } from './types';
+import type { GameState, Team } from './types';
 
 export interface ClientMessage {
 	type: 'JOIN_ROOM';
@@ -13,25 +13,7 @@ export interface ClientMovePiece {
 	targetY: number;
 }
 
-export interface ClientDeclareShot {
-	type: 'DECLARE_SHOT';
-	pieceId: string;
-	targetX: number;
-	targetY: number;
-	power: number;
-}
-
-export interface ClientRepositionGoalie {
-	type: 'REPOSITION_GOALIE';
-	x: number;
-	y: number;
-}
-
-export type ClientInMessage =
-	| ClientMessage
-	| ClientMovePiece
-	| ClientDeclareShot
-	| ClientRepositionGoalie;
+export type ClientInMessage = ClientMessage | ClientMovePiece;
 
 export interface ServerRoomJoined {
 	type: 'ROOM_JOINED';
@@ -44,18 +26,6 @@ export interface ServerRoomJoined {
 export interface ServerStateUpdate {
 	type: 'STATE_UPDATE';
 	state: GameState;
-}
-
-export interface ServerGoalieWindow {
-	type: 'GOALIE_WINDOW';
-	durationMs: number;
-}
-
-export interface ServerShotResolved {
-	type: 'SHOT_RESOLVED';
-	result: ShotResult;
-	path: Point[];
-	scoredBy?: Team;
 }
 
 export interface ServerGameOver {
@@ -83,8 +53,6 @@ export interface ServerOpponentDisconnected {
 export type ServerOutMessage =
 	| ServerRoomJoined
 	| ServerStateUpdate
-	| ServerGoalieWindow
-	| ServerShotResolved
 	| ServerGameOver
 	| ServerError
 	| ServerPlayerJoined

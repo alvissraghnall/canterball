@@ -26,13 +26,6 @@ export const PIECE = {
   PLAYER_COUNT: 10,
 } as const;
 
-export const SHOT = {
-  MIN_POWER: 1,
-  MAX_POWER: 10,
-  GOALIE_WINDOW_MS: 3000,
-  PATH_POINT_INTERVAL: 0.5,
-} as const;
-
 export const HOME_FORMATION: { x: number; y: number }[] = [
   { x: 3, y: 30 },
   { x: 10, y: 8 },

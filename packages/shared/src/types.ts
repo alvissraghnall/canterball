@@ -2,9 +2,7 @@ export type Team = 'HOME' | 'AWAY';
 
 export type PieceType = 'PLAYER' | 'GOALIE';
 
-export type GamePhase = 'IDLE' | 'PLAYER_TURN' | 'SHOT_DECLARED' | 'SHOT_IN_FLIGHT';
-
-export type ShotResult = 'GOAL' | 'SAVE' | 'OUT';
+export type GamePhase = 'IDLE' | 'PLAYER_TURN';
 
 export interface Point {
 	x: number;
@@ -38,19 +36,4 @@ export interface GameState {
 	kickoffDone: boolean;
 }
 
-export interface ShotDeclaration {
-	pieceId: string;
-	target: Point;
-	power: number;
-}
 
-export interface GoalieWindow {
-	durationMs: number;
-	deadline: number;
-}
-
-export interface ShotResolution {
-	result: ShotResult;
-	path: Point[];
-	ballFinalPosition: Point;
-}

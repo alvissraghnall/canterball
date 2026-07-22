@@ -9,9 +9,6 @@ class GameStore {
 		playerName: '',
 		playerCount: 0,
 		phase: 'lobby' as 'lobby' | 'playing' | 'finished',
-		shotPath: [] as { x: number; y: number }[],
-		shotAnimating: false,
-		goalieWindowActive: false,
 		errorMessage: null as string | null,
 		disconnected: false,
 	});
@@ -72,27 +69,6 @@ class GameStore {
 		this.#state.phase = v;
 	}
 
-	get shotPath() {
-		return this.#state.shotPath;
-	}
-	set shotPath(v) {
-		this.#state.shotPath = v;
-	}
-
-	get shotAnimating() {
-		return this.#state.shotAnimating;
-	}
-	set shotAnimating(v) {
-		this.#state.shotAnimating = v;
-	}
-
-	get goalieWindowActive() {
-		return this.#state.goalieWindowActive;
-	}
-	set goalieWindowActive(v) {
-		this.#state.goalieWindowActive = v;
-	}
-
 	get errorMessage() {
 		return this.#state.errorMessage;
 	}
@@ -122,9 +98,6 @@ class GameStore {
 		this.#state.playerSide = null;
 		this.#state.playerCount = 0;
 		this.#state.phase = 'lobby';
-		this.#state.shotPath = [];
-		this.#state.shotAnimating = false;
-		this.#state.goalieWindowActive = false;
 		this.#state.errorMessage = null;
 		this.#state.disconnected = false;
 	}

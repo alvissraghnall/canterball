@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { GameState, Team, Point } from '@canterball/shared';
-	import { FIELD, PIECE, SHOT } from '@canterball/shared';
+	import { FIELD, PIECE } from '@canterball/shared';
 	import { CANVAS } from '$lib/game/constants';
 
 	// ─── Constants ───────────────────────────────────────────────────────────────
