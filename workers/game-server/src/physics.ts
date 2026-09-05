@@ -1,4 +1,4 @@
-import { type Point, FIELD } from '@canterball/shared';
+import { type Point } from '@canterball/shared';
 
 export function checkBallHit(
 	playerStart: Point,
@@ -50,11 +50,13 @@ export function checkBallHit(
 		const newBallX = ball.x + Math.cos(finalAngle) * power;
 		const newBallY = ball.y + Math.sin(finalAngle) * power;
 
+		// NOTE: the raw position is returned unclamped; the rules layer is
+		// responsible for clamping and for deciding goal/out-of-bounds restarts.
 		return {
 			hit: true,
 			newBallPos: {
-				x: Math.max(0, Math.min(FIELD.WIDTH, newBallX)),
-				y: Math.max(0, Math.min(FIELD.HEIGHT, newBallY)),
+				x: newBallX,
+				y: newBallY,
 			},
 		};
 	}

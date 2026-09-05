@@ -110,7 +110,7 @@ export class RoomDB {
 			.select({
 				playerId: schema.matchResults.home_player_id,
 				playerName: schema.matchResults.home_player_name,
-				wins: count(),
+				wins: count().as('home_wins'),
 			})
 			.from(schema.matchResults)
 			.where(eq(schema.matchResults.winner, 'HOME'))
@@ -121,7 +121,7 @@ export class RoomDB {
 			.select({
 				playerId: schema.matchResults.away_player_id,
 				playerName: schema.matchResults.away_player_name,
-				wins: count(),
+				wins: count().as('away_wins'),
 			})
 			.from(schema.matchResults)
 			.where(eq(schema.matchResults.winner, 'AWAY'))

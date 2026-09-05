@@ -8,3 +8,4 @@ dist/
 *.tsbuildinfo
 .dev.vars
 .env*
+.playwright-mcp

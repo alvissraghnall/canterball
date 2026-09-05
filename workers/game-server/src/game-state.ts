@@ -1,14 +1,15 @@
 import {
 	type Piece,
-	type Ball,
-	type GameState,
 	type Point,
+	type GameState,
+	type Restart,
 	type Team,
 	FIELD,
 	PIECE,
+	BALL_RADIUS,
+	RESTART,
 	TURN_LIMIT,
 	createInitialPieces,
-	createInitialBall,
 } from '@canterball/shared';
 
 import { checkBallHit } from './physics';
@@ -19,6 +20,24 @@ function dist(a: Point, b: Point): number {
 
 function clamp(v: number, min: number, max: number): number {
 	return Math.max(min, Math.min(max, v));
+}
+
+function otherTeam(team: Team): Team {
+	return team === 'HOME' ? 'AWAY' : 'HOME';
+}
+
+/** Where did the raw (unclamped) ball position cross a boundary, if anywhere? */
+type OutEvent = 'GOAL' | 'END' | 'TOUCH' | null;
+
+function classifyOut(p: Point): OutEvent {
+	const outX = p.x < 0 || p.x > FIELD.WIDTH;
+	const outY = p.y < 0 || p.y > FIELD.HEIGHT;
+	if (!outX && !outY) return null;
+
+	const inMouth = p.y >= FIELD.GOAL_Y && p.y <= FIELD.GOAL_Y + FIELD.GOAL_HEIGHT;
+	if (outX && inMouth) return 'GOAL';
+	if (outX) return 'END';
+	return 'TOUCH';
 }
 
 export class GameStateMachine {
@@ -34,24 +53,13 @@ export class GameStateMachine {
 			currentTurn: 'HOME',
 			turnNumber: 1,
 			pieces: createInitialPieces(),
-			ball: createInitialBall(),
+			ball: { x: FIELD.CENTER_X, y: FIELD.CENTER_Y },
 			score: [0, 0],
 			kickoffDone: false,
+			lastTouch: null,
+			restart: null,
 		};
-		this.setupKickoff();
-	}
-
-	private setupKickoff(): void {
-		this.state.ball = { x: FIELD.CENTER_X, y: FIELD.CENTER_Y };
-		this.state.kickoffDone = false;
-
-		// Position a central piece over the ball for kickoff
-		const strikerId = `${this.state.currentTurn}_10`;
-		const striker = this.state.pieces.find((p) => p.id === strikerId);
-		if (striker) {
-			striker.x = FIELD.CENTER_X;
-			striker.y = FIELD.CENTER_Y;
-		}
+		this.beginKickoff('HOME');
 	}
 
 	getPiecesForTeam(team: Team): Piece[] {
@@ -89,17 +97,40 @@ export class GameStateMachine {
 			return { valid: false, reason: 'Target out of bounds' };
 		}
 
-		if (!this.state.kickoffDone) {
-			// Kickoff rule: must kick to team's side
-			const isHome = state.currentTurn === 'HOME';
-			const toHisSide = isHome ? targetX < FIELD.CENTER_X : targetX > FIELD.CENTER_X;
-
-			const hitCheck = checkBallHit(
+		let hitCheck: ReturnType<typeof checkBallHit> = { hit: false };
+		if (state.restart) {
+			// A dead ball must be taken immediately: the moving piece has to
+			// make contact with the ball on the same move.
+			hitCheck = checkBallHit(
 				piece,
 				{ x: targetX, y: targetY },
 				PIECE.PLAYER_RADIUS,
 				state.ball,
-				1,
+				BALL_RADIUS,
+			);
+			if (!hitCheck.hit) {
+				const kind = state.restart.kind === 'THROW_IN'
+					? 'throw-in'
+					: state.restart.kind === 'GOAL_KICK'
+						? 'goal kick'
+						: state.restart.kind === 'CORNER'
+							? 'corner'
+							: 'kickoff';
+				return { valid: false, reason: `Take the ${kind} first` };
+			}
+		}
+
+		if (!state.kickoffDone && !hitCheck.hit) {
+			// Kickoff rule: must kick to team's side
+			const isHome = state.currentTurn === 'HOME';
+			const toHisSide = isHome ? targetX < FIELD.CENTER_X : targetX > FIELD.CENTER_X;
+
+			hitCheck = checkBallHit(
+				piece,
+				{ x: targetX, y: targetY },
+				PIECE.PLAYER_RADIUS,
+				state.ball,
+				BALL_RADIUS,
 			);
 			if (hitCheck.hit && !toHisSide) {
 				return { valid: false, reason: 'Kickoff must be to your own side!' };
@@ -130,32 +161,130 @@ export class GameStateMachine {
 			{ x: targetX, y: targetY },
 			PIECE.PLAYER_RADIUS,
 			this.state.ball,
-			1,
+			BALL_RADIUS,
 		);
 		if (hitCheck.hit && hitCheck.newBallPos) {
-			this.state.ball = hitCheck.newBallPos;
+			const raw = hitCheck.newBallPos;
+			const shooter: Team = this.state.currentTurn;
+
+			this.state.lastTouch = shooter;
 			this.state.kickoffDone = true;
 
-			// Check for goal
-			const isHome = this.state.currentTurn === 'HOME';
-			const goalSide = isHome ? FIELD.WIDTH : 0;
-			const goalYMin = FIELD.GOAL_Y;
-			const goalYMax = FIELD.GOAL_Y + FIELD.GOAL_HEIGHT;
+			const out = classifyOut(raw);
 
-			const scored = isHome ? this.state.ball.x >= goalSide : this.state.ball.x <= goalSide;
-
-			if (scored && this.state.ball.y >= goalYMin && this.state.ball.y <= goalYMax) {
-				// GOAL!
-				if (isHome) this.state.score[0]++;
-				else this.state.score[1]++;
-
-				// Reset pieces for kickoff
-				this.state.pieces = createInitialPieces();
-				this.setupKickoff();
+			if (out === 'GOAL') {
+				// The team that attacks this end gets the goal, handling own-goals.
+				const scoringTeam: Team = raw.x > FIELD.WIDTH ? 'HOME' : 'AWAY';
+				this.handleGoal(scoringTeam);
+				return;
 			}
+
+			if (out) {
+				// Dead ball → set up the restart and hand the ball to the awarded team.
+				const restart = this.resolveRestart(out, shooter, raw);
+				this.state.ball = {
+					x: clamp(restart.x, 0, FIELD.WIDTH),
+					y: clamp(restart.y, 0, FIELD.HEIGHT),
+				};
+				this.state.restart = restart;
+				this.setupSetPiece(restart);
+				this.state.currentTurn = restart.team;
+				return; // no advanceTurn: the set-piece kick consumes the next turn
+			}
+
+			// In play
+			this.state.ball = {
+				x: clamp(raw.x, 0, FIELD.WIDTH),
+				y: clamp(raw.y, 0, FIELD.HEIGHT),
+			};
+			this.state.restart = null;
 		}
 
 		this.advanceTurn();
+	}
+
+	/** Resolve where the dead ball is placed and who takes it. */
+	private resolveRestart(out: Exclude<OutEvent, 'GOAL'>, shooter: Team, raw: Point): Restart {
+		if (out === 'TOUCH') {
+			// Throw-in to the team that did NOT touch it last.
+			const team = otherTeam(shooter);
+			const y = raw.y <= FIELD.CENTER_Y ? RESTART.THROW_INSET : FIELD.HEIGHT - RESTART.THROW_INSET;
+			return {
+				kind: 'THROW_IN',
+				team,
+				x: clamp(raw.x, RESTART.THROW_MIN_X, FIELD.WIDTH - RESTART.THROW_MIN_X),
+				y,
+			};
+		}
+
+		// Ball went out over an end line (outside the goal mouth). The team
+		// attacking that end mirrors the ball's exit.
+		const attacking: Team = raw.x > FIELD.WIDTH ? 'HOME' : 'AWAY';
+
+		if (shooter === attacking) {
+			// Attacker put it out → goal kick to the defending team.
+			const team = otherTeam(attacking);
+			const x = team === 'HOME' ? RESTART.GOAL_KICK_X : FIELD.WIDTH - RESTART.GOAL_KICK_X;
+			return {
+				kind: 'GOAL_KICK',
+				team,
+				x,
+				y: clamp(raw.y, FIELD.GOAL_Y, FIELD.GOAL_Y + FIELD.GOAL_HEIGHT),
+			};
+		}
+
+		// Defending team cleared it out → corner to the attacking team.
+		const x = attacking === 'HOME' ? FIELD.WIDTH - RESTART.CORNER_INSET : RESTART.CORNER_INSET;
+		const y = raw.y <= FIELD.CENTER_Y ? RESTART.CORNER_INSET : FIELD.HEIGHT - RESTART.CORNER_INSET;
+		return { kind: 'CORNER', team: attacking, x, y };
+	}
+
+	private handleGoal(shooter: Team): void {
+		if (shooter === 'HOME') this.state.score[0]++;
+		else this.state.score[1]++;
+
+		// Conceding team takes the kickoff.
+		this.beginKickoff(otherTeam(shooter));
+	}
+
+	private beginKickoff(team: Team): void {
+		this.state.pieces = createInitialPieces();
+		this.state.ball = { x: FIELD.CENTER_X, y: FIELD.CENTER_Y };
+		this.state.lastTouch = null;
+		this.state.kickoffDone = false;
+		this.state.currentTurn = team;
+		this.state.restart = { kind: 'KICKOFF', team, x: FIELD.CENTER_X, y: FIELD.CENTER_Y };
+
+		// Position the team's far-side striker over the ball for kickoff.
+		const strikerId = `${team}_10`;
+		const striker = this.state.pieces.find((p) => p.id === strikerId);
+		if (striker) {
+			striker.x = FIELD.CENTER_X;
+			striker.y = FIELD.CENTER_Y;
+		}
+	}
+
+	/** Step the awarded team's nearest outfield player up to take the set piece. */
+	private setupSetPiece(restart: Restart): void {
+		const outfield = this.state.pieces.filter(
+			(p) => p.team === restart.team && p.type === 'PLAYER',
+		);
+		const pool = outfield.length > 0 ? outfield : this.state.pieces.filter((p) => p.team === restart.team);
+
+		let taker: Piece | null = null;
+		let best = Infinity;
+		for (const p of pool) {
+			const d = dist(p, { x: restart.x, y: restart.y });
+			if (d < best) {
+				best = d;
+				taker = p;
+			}
+		}
+
+		if (taker) {
+			taker.x = restart.x;
+			taker.y = restart.y;
+		}
 	}
 
 	isGameOver(): { over: boolean; winner?: Team; draw?: boolean } {

@@ -56,3 +56,12 @@ export const AWAY_FORMATION: { x: number; y: number }[] = [
 
 export const TURN_LIMIT = 100;
 export const MAX_PLAYERS_PER_ROOM = 2;
+
+export const BALL_RADIUS = 1;
+
+export const RESTART = {
+  CORNER_INSET: 2,
+  GOAL_KICK_X: 6,
+  THROW_INSET: 1.5,
+  THROW_MIN_X: 4,
+} as const;

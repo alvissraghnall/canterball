@@ -103,6 +103,7 @@
 		if (selectedPiece) drawMoveRadius();
 		drawPieces();
 		drawBall();
+		drawRestartMarker();
 		if (dragStart && dragCurrent) drawDragPreview();
 		if (selectedPiece && dragCurrent) drawBallTrajectoryPreview();
 	}
@@ -334,6 +335,30 @@
 		ctx.stroke();
 	}
 
+	// ── Restart Marker ────────────────────────────────────────────────────
+
+	function drawRestartMarker() {
+		if (!gameState?.restart) return;
+		const { x, y } = fieldToCanvas(gameState.restart.x, gameState.restart.y);
+
+		ctx.save();
+		ctx.beginPath();
+		ctx.arc(x, y, 7, 0, Math.PI * 2);
+		ctx.fillStyle = 'rgba(242, 169, 59, 0.12)';
+		ctx.fill();
+		ctx.strokeStyle = 'rgba(242, 169, 59, 0.8)';
+		ctx.lineWidth = 1.5;
+		ctx.setLineDash([3, 3]);
+		ctx.stroke();
+		ctx.setLineDash([]);
+
+		ctx.beginPath();
+		ctx.arc(x, y, 2, 0, Math.PI * 2);
+		ctx.fillStyle = 'rgba(242, 169, 59, 0.9)';
+		ctx.fill();
+		ctx.restore();
+	}
+
 	// ── Drag Preview ──────────────────────────────────────────────────────────
 
 	function drawDragPreview() {
@@ -526,11 +551,33 @@
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === 'Escape') cancelSelection();
 	}
+
+	const restartLabel = $derived.by(() => {
+		const r = gameState?.restart;
+		if (!r) return null;
+		const kind = r.kind === 'KICKOFF'
+			? 'Kick Off'
+			: r.kind === 'CORNER'
+				? 'Corner'
+				: r.kind === 'GOAL_KICK'
+					? 'Goal Kick'
+					: 'Throw-In';
+		const side = mySide === r.team ? 'You' : 'Opponent';
+		return { kind, side, isMine: mySide === r.team };
+	});
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
 
 <div class="board-container">
+	{#if restartLabel}
+		<div class="set-chip {restartLabel.isMine ? 'mine' : ''}">
+			<span class="pulse"></span>
+			<strong>{restartLabel.kind}</strong>
+			<span class="who">· {restartLabel.side}</span>
+		</div>
+	{/if}
+
 	<canvas
 		bind:this={canvas}
 		width={CANVAS.WIDTH}
@@ -546,11 +593,21 @@
 		{#if !gameState}
 			<span>Waiting for the other manager ({playerCount}/2)…</span>
 		{:else if isMyTurn}
-			{#if !gameState.kickoffDone}
-				<strong>Kickoff!</strong> Nudge the ball out from the centre.
+			{#if restartLabel}
+				{#if restartLabel.kind === 'Kick Off'}
+					<strong>Kickoff!</strong> Nudge the ball out from the centre.
+				{:else if restartLabel.kind === 'Corner'}
+					<strong>Corner!</strong> Flick it into the box.
+				{:else if restartLabel.kind === 'Goal Kick'}
+					<strong>Goal kick.</strong> Clear it into play.
+				{:else}
+					<strong>Throw-in.</strong> Flick it back into play.
+				{/if}
 			{:else}
 				<span>Flick your cork: press, drag, release.</span>
 			{/if}
+		{:else if restartLabel}
+			<span>Stopping for {restartLabel.side} to take the {restartLabel.kind}…</span>
 		{:else}
 			<span>Opponent is thinking…</span>
 		{/if}
@@ -573,15 +630,50 @@
 		touch-action: none;
 	}
 
-	.help {
-		font-family: var(--font-jetbrains);
-		font-size: 0.75rem;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: var(--color-on-surface-variant);
-		text-align: center;
-		min-height: 1.2rem;
-	}
+.set-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+	padding: 0.4rem 0.9rem;
+	border-radius: 999px;
+	border: 2px solid rgba(8, 24, 18, 0.7);
+	background: linear-gradient(180deg, #ffd88a, var(--color-primary));
+	color: var(--color-on-primary);
+	font-family: var(--font-jetbrains);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	box-shadow: 0 3px 0 rgba(8, 20, 16, 0.5);
+}
+
+.set-chip.mine {
+	background: linear-gradient(180deg, var(--color-home), #176ca8);
+	color: #eaf6ff;
+}
+
+.set-chip .who {
+	font-weight: 600;
+	opacity: 0.8;
+}
+
+.set-chip .pulse {
+	width: 7px;
+	height: 7px;
+	border-radius: 999px;
+	background: currentColor;
+	animation: signal-blink 1.4s ease-in-out infinite;
+}
+
+.help {
+	font-family: var(--font-jetbrains);
+	font-size: 0.75rem;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--color-on-surface-variant);
+	text-align: center;
+	min-height: 1.2rem;
+}
 
 	.help strong {
 		color: var(--color-primary);

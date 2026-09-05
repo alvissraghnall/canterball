@@ -4,6 +4,16 @@ export type PieceType = 'PLAYER' | 'GOALIE';
 
 export type GamePhase = 'IDLE' | 'PLAYER_TURN';
 
+export type RestartKind = 'KICKOFF' | 'CORNER' | 'THROW_IN' | 'GOAL_KICK';
+
+export interface Restart {
+	kind: RestartKind;
+	/** Team entitled to take the set piece (for KICKOFF, the kicking-off team). */
+	team: Team;
+	x: number;
+	y: number;
+}
+
 export interface Point {
 	x: number;
 	y: number;
@@ -34,6 +44,10 @@ export interface GameState {
 	ball: Ball;
 	score: [number, number];
 	kickoffDone: boolean;
+	/** Team that last made contact with the ball; null until the ball is in play. */
+	lastTouch: Team | null;
+	/** Active dead-ball restart, or null while the ball is in play. */
+	restart: Restart | null;
 }
 
 export interface MatchResult {
