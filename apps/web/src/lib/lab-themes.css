@@ -1,0 +1,436 @@
+/* ─── Theme Lab stylesheet ────────────────────────────────────────────────
+   Lab-only. The two "what if" themes override the felt design tokens by
+   scoping them under a wrapper class. Shared demo primitives (pitch preview,
+   corks, scorebar) adapt automatically because they read the tokens.        */
+
+/* ── Demo primitives (defaults = felt theme) ──────────────────────────── */
+
+.demo-pitch {
+	--demo-pitch: #1c6243;
+	--demo-line: rgba(246, 236, 212, 0.42);
+	position: relative;
+	overflow: hidden;
+	background-color: var(--demo-pitch);
+	background-image: repeating-linear-gradient(
+		90deg,
+		rgba(0, 0, 0, 0.07) 0 26px,
+		rgba(255, 255, 255, 0.03) 26px 52px
+	);
+	border-radius: 8px;
+}
+
+.demo-pitch .line-v,
+.demo-pitch .line-h {
+	position: absolute;
+	background: var(--demo-line);
+}
+
+.demo-pitch .line-v {
+	left: 50%;
+	top: 0;
+	bottom: 0;
+	width: 1.5px;
+	transform: translateX(-50%);
+}
+
+.demo-pitch .midline-h {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 50%;
+	height: 1.5px;
+	transform: translateY(-50%);
+	border-top: 1.5px solid var(--demo-line);
+}
+
+.demo-pitch .ring {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 38%;
+	padding-bottom: 38%;
+	border: 1.5px solid var(--demo-line);
+	border-radius: 999px;
+	transform: translate(-50%, -50%);
+}
+
+.demo-pitch .goal {
+	position: absolute;
+	top: 50%;
+	width: 9%;
+	height: 30%;
+	border: 2px solid var(--demo-line);
+	transform: translateY(-50%);
+	background: rgba(0, 0, 0, 0.08);
+}
+
+.demo-pitch .goal.home-goal {
+	left: -1px;
+}
+
+.demo-pitch .goal.away-goal {
+	right: -1px;
+}
+
+.demo-cork {
+	position: absolute;
+	width: 22px;
+	height: 22px;
+	border-radius: 999px;
+	border: 2px solid rgba(0, 0, 0, 0.35);
+	box-shadow:
+		inset 0 2px 0 rgba(255, 255, 255, 0.35),
+		inset 0 -2px 0 rgba(0, 0, 0, 0.3),
+		0 2px 3px rgba(0, 0, 0, 0.4);
+}
+
+.demo-cork::after {
+	content: '';
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 55%;
+	height: 55%;
+	border-radius: 999px;
+	transform: translate(-50%, -50%);
+	background: rgba(0, 0, 0, 0.18);
+}
+
+.demo-cork.home {
+	background: radial-gradient(circle at 32% 28%, #bce6ff, var(--color-home) 58%, #2a6a9e);
+}
+
+.demo-cork.away {
+	background: radial-gradient(circle at 32% 28%, #ffd3c2, var(--color-away) 58%, #b03a1e);
+}
+
+.demo-ball {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 12px;
+	height: 12px;
+	border-radius: 999px;
+	transform: translate(-50%, -50%);
+	background: radial-gradient(circle at 32% 28%, #fffdf5, #e8dcc6 60%, #bfae90);
+	border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.demo-ball::after {
+	content: '';
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 42%;
+	height: 42%;
+	border-radius: 999px;
+	transform: translate(-50%, -50%);
+	background: rgba(242, 169, 59, 0.55);
+}
+
+.demo-chip {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.75rem;
+	height: 2.75rem;
+	border-radius: var(--radius-tile);
+	border: 2px solid rgba(8, 24, 18, 0.5);
+	font-family: var(--font-jetbrains);
+	font-size: 11px;
+	font-weight: 700;
+	color: var(--color-on-surface);
+	background: color-mix(in srgb, var(--color-surface-container-high), #000 12%);
+}
+
+/* ─── Theme: Vintage Clubroom ──────────────────────────────────────────── */
+
+.theme-clubroom {
+	--color-background: #231a10;
+	--color-on-background: #f2e8d4;
+	--color-surface: #3a2c1d;
+	--color-surface-variant: #4a3826;
+	--color-surface-bright: #5a452c;
+	--color-surface-tint: #c9a227;
+	--color-primary: #c9a227;
+	--color-on-primary: #271c04;
+	--color-primary-container: #6d5420;
+	--color-on-primary-container: #ecd28a;
+	--color-tertiary: #9a6b32;
+	--color-tertiary-container: #5b421d;
+	--color-on-tertiary-container: #ecd49f;
+	--color-surface-container-low: #2c2113;
+	--color-surface-container: #413121;
+	--color-surface-container-high: #4c3a27;
+	--color-surface-container-highest: #58442e;
+	--color-on-surface: #f2e8d4;
+	--color-on-surface-variant: #ccb992;
+	--color-outline: #6d5736;
+	--color-outline-variant: #544228;
+	--color-error: #e08a5a;
+	--color-on-error: #3a1200;
+	--color-home: #6f9fd0;
+	--color-away: #c85a3a;
+
+	--font-space: 'Georgia', 'Times New Roman', serif;
+	--font-jetbrains: 'Courier New', monospace;
+	--font-inter: 'Georgia', 'Times New Roman', serif;
+
+	--radius-panel: 14px;
+	--radius-control: 999px;
+	--radius-tile: 10px;
+	--ink: #241a0c;
+
+	--demo-pitch: #1f4a33;
+	--demo-line: rgba(240, 228, 204, 0.4);
+
+	background:
+		radial-gradient(ellipse 90% 50% at 50% 12%, rgba(201, 162, 39, 0.1), transparent 60%),
+		repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.06) 0 44px, rgba(0, 0, 0, 0.03) 44px 88px),
+		var(--color-background);
+	background-blend-mode: multiply;
+}
+
+.theme-clubroom h1,
+.theme-clubroom h2,
+.theme-clubroom h3,
+.theme-clubroom h4 {
+	font-family: var(--font-space);
+	letter-spacing: 0.01em;
+}
+
+.theme-clubroom .panel {
+	box-shadow:
+		inset 0 2px 0 rgba(255, 255, 255, 0.09),
+		inset 0 -3px 0 rgba(10, 8, 4, 0.55),
+		0 3px 0 rgba(10, 8, 4, 0.5);
+}
+
+.theme-clubroom .signal {
+	background: linear-gradient(180deg, rgba(236, 210, 138, 0.24), rgba(201, 162, 39, 0.06));
+}
+
+.theme-clubroom .cork-felt {
+	background-color: var(--color-background);
+	background-image: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.05) 0 40px, transparent 40px 80px);
+}
+
+.theme-clubroom .corners {
+	color: rgba(201, 162, 39, 0.45);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.theme-clubroom .corners:hover {
+		color: rgba(201, 162, 39, 0.85);
+	}
+}
+
+.theme-clubroom .demo-pitch {
+	border: 1px solid rgba(240, 228, 204, 0.12);
+}
+
+/* ─── Theme: Printed Match Program ─────────────────────────────────────── */
+
+.theme-program {
+	--color-background: #f0ead7;
+	--color-on-background: #17130c;
+	--color-surface: #fffdf6;
+	--color-surface-variant: #f4efe0;
+	--color-surface-bright: #e7dfc9;
+	--color-surface-tint: #175c38;
+	--color-primary: #175c38;
+	--color-on-primary: #ffffff;
+	--color-primary-container: #dbe7d5;
+	--color-on-primary-container: #0d3a22;
+	--color-tertiary: #b3261e;
+	--color-tertiary-container: #f4d9c9;
+	--color-on-tertiary-container: #57140c;
+	--color-surface-container-low: #f7f2e3;
+	--color-surface-container: #f0e9d6;
+	--color-surface-container-high: #eae1ca;
+	--color-surface-container-highest: #dcd2b4;
+	--color-on-surface: #17130c;
+	--color-on-surface-variant: #554a38;
+	--color-outline: #cec2a8;
+	--color-outline-variant: #bfb294;
+	--color-error: #a8321b;
+	--color-on-error: #ffffff;
+	--color-home: #12506e;
+	--color-away: #a8321b;
+
+	--font-space: Georgia, 'Times New Roman', serif;
+	--font-jetbrains: 'Courier New', monospace;
+	--font-inter: Georgia, 'Times New Roman', serif;
+
+	--radius-panel: 0;
+	--radius-control: 0;
+	--radius-tile: 0;
+	--ink: #17130c;
+
+	--demo-pitch: #2a6f46;
+	--demo-line: rgba(23, 19, 12, 0.85);
+
+	background: var(--color-background);
+}
+
+.theme-program h1,
+.theme-program h2,
+.theme-program h3,
+.theme-program h4 {
+	font-family: var(--font-space);
+	letter-spacing: 0.01em;
+}
+
+.theme-program .panel {
+	background: linear-gradient(180deg, #fffdf6, #f1e9d2);
+	border: 2px solid var(--ink);
+	border-radius: 0;
+	box-shadow: 4px 4px 0 var(--ink);
+}
+
+.theme-program .btn,
+.theme-program .btn-lg,
+.theme-program .btn-sm,
+.theme-program .btn-ghost,
+.theme-program .btn-ghost-lg,
+.theme-program .btn-ghost-sm {
+	border-radius: 0;
+	border: 2px solid var(--ink);
+	background: var(--color-primary);
+	color: var(--color-on-primary);
+	box-shadow: 4px 4px 0 var(--ink);
+}
+
+.theme-program .btn-ghost,
+.theme-program .btn-ghost-lg,
+.theme-program .btn-ghost-sm {
+	background: transparent;
+	color: var(--ink);
+	box-shadow: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.theme-program .btn:hover,
+	.theme-program .btn:focus-visible {
+		transform: translate(-1px, -1px);
+		box-shadow: 5px 5px 0 var(--ink);
+	}
+
+	.theme-program .btn-ghost:hover {
+		background: rgba(23, 19, 12, 0.05);
+	}
+}
+
+.theme-program .btn:active {
+	transform: translate(3px, 3px);
+	box-shadow: 1px 1px 0 var(--ink);
+}
+
+.theme-program .btn-ghost:active {
+	transform: translate(3px, 3px);
+	box-shadow: 0 0 0 var(--ink);
+}
+
+.theme-program .signal {
+	border-radius: 0;
+	border: 2px solid var(--ink);
+	background: var(--color-tertiary);
+	color: #ffffff;
+	box-shadow: 2px 2px 0 var(--ink);
+}
+
+.theme-program .signal .dot {
+	background: #ffffff;
+	box-shadow: none;
+}
+
+.theme-program .pips span.on {
+	background: var(--color-primary);
+	box-shadow: none;
+}
+
+.theme-program .pips span {
+	border-radius: 0;
+}
+
+.theme-program .hazard {
+	opacity: 0.6;
+	border-radius: 0;
+}
+
+.theme-program .icon-tile {
+	border-radius: 0;
+	border: 2px solid var(--ink);
+	background: var(--color-primary);
+	color: var(--color-on-primary);
+	box-shadow: 3px 3px 0 var(--ink);
+}
+
+.theme-program .corners {
+	color: rgba(23, 19, 12, 0.28);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.theme-program .corners:hover {
+		color: rgba(23, 19, 12, 0.55);
+	}
+}
+
+.theme-program .corners::before {
+	background-position:
+		top left,
+		top left,
+		top right,
+		top right,
+		bottom left,
+		bottom left,
+		bottom right,
+		bottom right;
+	background-size: 18px 3px, 3px 18px;
+}
+
+.theme-program .demo-pitch {
+	border: 2px solid var(--ink);
+	border-radius: 0;
+	box-shadow: 3px 3px 0 rgba(23, 19, 12, 0.85);
+}
+
+.theme-program .demo-pitch .line-v,
+.theme-program .demo-pitch .midline-h,
+.theme-program .demo-pitch .ring,
+.theme-program .demo-pitch .goal {
+	border-color: var(--demo-line);
+}
+
+.theme-program .demo-pitch .goal {
+	background: none;
+}
+
+.theme-program .demo-bg {
+	background:
+		radial-gradient(ellipse 90% 52% at 50% 10%, rgba(201, 162, 39, 0.28), transparent 60%),
+		var(--color-background);
+}
+
+.theme-program input {
+	background: #fffdf6;
+	border: 2px solid var(--ink);
+	border-radius: 0;
+	color: var(--ink);
+}
+
+.theme-program input:focus {
+	border-color: var(--ink);
+	box-shadow: 0 0 0 3px rgba(23, 19, 12, 0.15);
+}
+
+.theme-program input::placeholder {
+	color: rgba(85, 74, 56, 0.65);
+}
+
+/* ─── Shared stage ─────────────────────────────────────────────────────── */
+
+.theme-stage {
+	min-height: 70vh;
+	color: var(--color-on-surface);
+}

@@ -52,58 +52,73 @@
 </script>
 
 <svelte:head>
-	<title>Match History | Cantar Ball</title>
+	<title>Results | Cantar Ball</title>
 </svelte:head>
 
-<div class="mx-auto max-w-4xl space-y-8">
-	<header>
-		<h1 class="font-display-lg text-4xl text-on-surface">Match History</h1>
-		<p class="mt-2 text-on-surface-variant">Your recent matches and results.</p>
+<div class="mx-auto max-w-4xl space-y-6">
+	<header class="mb-8">
+		<div class="signal mb-4 w-fit">
+			<span class="dot"></span>
+			The Record Books
+		</div>
+		<h1 class="font-space text-4xl font-bold tracking-tighter text-on-surface">
+			Match Results
+		</h1>
+		<p class="mt-2 text-on-surface-variant">Every cork, every goal, every full-time whistle.</p>
 	</header>
 
 	{#if loading}
-		<div class="glass-panel p-12 text-center">
-			<span class="material-symbols-outlined mb-4 animate-spin text-4xl text-primary">progress_activity</span>
-			<p class="font-jetbrains text-sm text-on-surface-variant">Loading history...</p>
+		<div class="panel corners flex flex-col items-center gap-4 p-14 text-center">
+			<span
+				class="material-symbols-outlined animate-spin text-4xl text-primary"
+				style="animation-duration: 1s"
+				>progress_activity</span
+			>
+			<p class="mono-label text-[10px] text-on-surface-variant">Flipping to full-time…</p>
 		</div>
 	{:else if history.length === 0}
-		<div class="glass-panel p-12 text-center">
-			<span class="material-symbols-outlined mb-4 text-5xl text-on-surface-variant">history</span>
-			<h2 class="font-display-lg text-xl text-on-surface">No matches yet</h2>
-			<p class="mt-2 text-on-surface-variant">
-				Your match history will appear here once you play some games.
+		<div class="panel corners flex flex-col items-center gap-3 p-14 text-center">
+			<span class="material-symbols-outlined text-5xl text-outline">history</span>
+			<h2 class="mt-2 font-space text-xl font-bold text-on-surface">No results on the board</h2>
+			<p class="max-w-sm text-on-surface-variant">
+				Play a couple of pickup matches and your scorelines will land here in print.
 			</p>
-			<a
-				href="/lobby"
-				class="mt-6 inline-block bg-primary px-8 py-3 font-label-caps text-[12px] font-bold uppercase text-on-primary no-underline transition-all hover:brightness-110"
-			>
-				Go to Lobby
-			</a>
+			<a href="/lobby" class="btn mt-4 no-underline">Go to the Fishbowl</a>
 		</div>
 	{:else}
 		<div class="space-y-3">
 			{#each history as entry}
 				{@const result = getResult(entry)}
-				<div class="glass-panel flex items-center justify-between p-4 transition-all hover:border-primary/30">
-					<div class="flex items-center gap-4">
+				<div
+					class="panel corners group flex items-center justify-between gap-4 p-4 transition-colors duration-300 hover:border-primary/40"
+				>
+					<div class="flex min-w-0 items-center gap-4">
 						<div
-							class="flex h-10 w-10 items-center justify-center text-lg font-bold
-								{result === 'win' ? 'border border-green-500/30 bg-green-500/10 text-green-500' :
-								 result === 'loss' ? 'border border-red-500/30 bg-red-500/10 text-red-500' :
-								 'border border-on-surface-variant/30 bg-surface-container text-on-surface-variant'}"
+							class="flex h-10 w-10 shrink-0 items-center justify-center text-lg font-bold
+								{result === 'win'
+									? 'border border-home/40 bg-home/10 text-home'
+									: result === 'loss'
+										? 'border border-away/40 bg-away/10 text-away'
+										: 'border border-on-surface-variant/30 bg-surface-container text-on-surface-variant'}"
 						>
 							{result === 'win' ? 'W' : result === 'loss' ? 'L' : 'D'}
 						</div>
-						<div>
-							<div class="font-display-lg text-sm font-bold uppercase text-on-surface">
+						<div class="min-w-0">
+							<div
+								class="truncate font-space text-sm font-bold uppercase text-on-surface transition-colors duration-300 group-hover:text-primary"
+							>
 								vs {getOpponent(entry)}
 							</div>
-							<div class="font-label-caps text-[10px] uppercase text-on-surface-variant">
+							<div class="mono-label mt-0.5 text-[8px] normal-case">
 								{formatDate(entry.created_at)}
 							</div>
 						</div>
 					</div>
-					<div class="font-jetbrains text-lg font-bold {result === 'win' ? 'text-primary' : 'text-on-surface'}">
+					<div
+						class="shrink-0 font-jetbrains text-lg font-bold {result === 'win'
+							? 'text-primary'
+							: 'text-on-surface'}"
+					>
 						{getScore(entry)}
 					</div>
 				</div>

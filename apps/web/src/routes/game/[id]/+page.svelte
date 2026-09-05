@@ -72,15 +72,18 @@
 	{#if gameStore.phase === 'finished'}
 		<div class="overlay">
 			<div class="modal">
-				<h2>Game Over</h2>
+				<span class="mono-label">Full-Time Whistle</span>
+				<h2>That's the game</h2>
 				{#if gameStore.gameState}
-					<p>
-						{gameStore.gameState.homePlayerName}
-						{gameStore.gameState.score[0]} - {gameStore.gameState.score[1]}
-						{gameStore.gameState.awayPlayerName}
+					<p class="scoreline">
+						<span>{gameStore.gameState.homePlayerName}</span>
+						<strong
+							>{gameStore.gameState.score[0]} &nbsp;–&nbsp; {gameStore.gameState.score[1]}</strong
+						>
+						<span>{gameStore.gameState.awayPlayerName}</span>
 					</p>
 				{/if}
-				<button onclick={() => goto('/lobby')}>Back to Lobby</button>
+				<button onclick={() => goto('/lobby')}>Head to the Clubhouse</button>
 			</div>
 		</div>
 	{/if}
@@ -88,9 +91,10 @@
 	{#if gameStore.disconnected}
 		<div class="overlay">
 			<div class="modal">
-				<h2>Connection Lost</h2>
-				<p>Your opponent has disconnected or the connection was lost.</p>
-				<button onclick={() => goto('/lobby')}>Back to Lobby</button>
+				<span class="mono-label warn">Signal Lost</span>
+				<h2>Man Down</h2>
+				<p class="note">Your opponent left the pitch or the channel dropped.</p>
+				<button onclick={() => goto('/lobby')}>Head to the Clubhouse</button>
 			</div>
 		</div>
 	{/if}
@@ -102,16 +106,18 @@
 	{#if gameStore.gameState}
 		<div class="scorebar">
 			<span class="home"
-				>{gameStore.gameState.homePlayerName} <strong>{gameStore.gameState.score[0]}</strong></span
+				>{gameStore.gameState.homePlayerName}
+				<strong>{gameStore.gameState.score[0]}</strong></span
 			>
 			<span class="turn-info">
+				<span class="mark"></span>
 				{#if gameStore.phase === 'playing'}
-					{gameStore.isMyTurn ? 'Your turn' : "Opponent's turn"}
-					(turn {gameStore.gameState.turnNumber})
+					{gameStore.isMyTurn ? 'Your turn' : "Opponent's turn"} · T{gameStore.gameState.turnNumber}
 				{/if}
 			</span>
 			<span class="away"
-				><strong>{gameStore.gameState.score[1]}</strong> {gameStore.gameState.awayPlayerName}</span
+				><strong>{gameStore.gameState.score[1]}</strong>
+				{gameStore.gameState.awayPlayerName}</span
 			>
 		</div>
 	{/if}
@@ -129,7 +135,7 @@
 	.game-page {
 		position: relative;
 		padding: 1rem;
-		max-width: 800px;
+		max-width: 820px;
 		margin: 0 auto;
 	}
 
@@ -137,93 +143,194 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 0.8rem 1.5rem;
-		background: #16213e;
-		border-radius: 12px;
+		gap: 1rem;
+		padding: 0.9rem 1.5rem;
 		margin-bottom: 1.5rem;
-		font-size: 1rem;
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		background: linear-gradient(180deg, rgba(13, 51, 38, 0.88), rgba(9, 29, 22, 0.96));
+		border: 2px solid rgba(246, 236, 212, 0.14);
+		box-shadow: 0 10px 28px -18px rgba(0, 0, 0, 0.85);
+		font-family: var(--font-jetbrains);
+		font-size: 0.8rem;
 	}
 
 	.home {
-		color: #4fc3f7;
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		color: var(--color-home);
 		font-weight: 500;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.away {
-		color: #ff8a65;
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		color: var(--color-away);
 		font-weight: 500;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
-	.home strong, .away strong {
-		font-size: 1.4rem;
-		margin: 0 0.5rem;
+	.home strong,
+	.away strong {
+		font-size: 1.5rem;
 	}
 
 	.turn-info {
-		color: #aaa;
-		font-size: 0.9rem;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		color: var(--color-on-surface-variant);
+		font-size: 0.72rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		white-space: nowrap;
+	}
+
+	.turn-info .mark {
+		width: 7px;
+		height: 7px;
+		border-radius: 999px;
+		background: var(--color-primary);
+		box-shadow: 0 0 8px var(--color-primary);
+		animation: turn 1.4s ease-in-out infinite;
+	}
+
+	@keyframes turn {
+		50% {
+			opacity: 0.3;
+		}
 	}
 
 	.overlay {
 		position: fixed;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.8);
+		background: rgba(8, 20, 16, 0.82);
+		backdrop-filter: blur(6px);
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		z-index: 100;
-		backdrop-filter: blur(4px);
 	}
 
 	.modal {
-		background: #1a1a2e;
-		padding: 2.5rem;
-		border-radius: 16px;
+		position: relative;
+		background: linear-gradient(180deg, rgba(13, 51, 38, 0.92), rgba(9, 29, 22, 0.98));
+		border: 1px solid rgba(242, 169, 59, 0.35);
+		box-shadow: 0 0 0 16px rgba(9, 29, 22, 0.4), 0 24px 60px -20px rgba(0, 0, 0, 0.9);
+		padding: 3rem 2.5rem;
 		text-align: center;
-		border: 1px solid #e94560;
-		max-width: 400px;
-		box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+		max-width: 480px;
+		width: calc(100% - 3rem);
+	}
+
+	.modal::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background:
+			linear-gradient(to right, #f2a93b, #f2a93b) top left / 18px 1px,
+			linear-gradient(to bottom, #f2a93b, #f2a93b) top left / 1px 18px,
+			linear-gradient(to right, #f2a93b, #f2a93b) top right / 18px 1px,
+			linear-gradient(to bottom, #f2a93b, #f2a93b) top right / 1px 18px;
+		background-repeat: no-repeat;
+	}
+
+	.modal .mono-label {
+		font-size: 9px;
+		letter-spacing: 0.3em;
+		text-transform: uppercase;
+		color: var(--color-primary);
+	}
+
+	.modal .mono-label.warn {
+		color: var(--color-away);
 	}
 
 	.modal h2 {
-		margin-bottom: 1rem;
-		color: #e94560;
-		font-size: 1.8rem;
+		margin-top: 0.4rem;
+		font-family: var(--font-space);
+		font-size: 2rem;
+		color: var(--color-on-surface);
+		text-transform: uppercase;
+		letter-spacing: -0.02em;
 	}
 
-	.modal p {
-		font-size: 1.1rem;
-		margin-bottom: 2rem;
-		color: #ccc;
-		line-height: 1.5;
+	.scoreline {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
+		margin: 1.5rem 0 2rem;
+		color: var(--color-on-surface-variant);
+		font-size: 0.8rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+	}
+
+	.scoreline strong {
+		font-family: var(--font-jetbrains);
+		font-size: 1.8rem;
+		color: var(--color-primary);
+	}
+
+	.note {
+		margin: 1rem 0 2rem;
+		color: var(--color-on-surface-variant);
+		line-height: 1.6;
 	}
 
 	.modal button {
-		background: #e94560;
-		color: white;
-		padding: 0.8rem 2rem;
-		border-radius: 8px;
-		font-weight: bold;
-		cursor: pointer;
-		transition: transform 0.2s;
+		font-family: var(--font-jetbrains);
+		font-size: 12px;
+		font-weight: 700;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--color-on-primary);
+		background: var(--color-primary);
+		border: 1px solid var(--color-primary);
+		padding: 0.85rem 2rem;
+		transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), filter 200ms ease;
 	}
 
 	.modal button:hover {
-		transform: scale(1.05);
+		filter: brightness(1.08);
+	}
+
+	.modal button:active {
+		transform: scale(0.96);
 	}
 
 	.toast {
 		position: fixed;
-		top: 2rem;
+		top: 5rem;
 		left: 50%;
 		transform: translateX(-50%);
-		background: #e94560;
-		color: white;
-		padding: 0.8rem 2rem;
-		border-radius: 8px;
 		z-index: 200;
-		font-size: 1rem;
-		box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0.7rem 1.2rem;
+		font-family: var(--font-jetbrains);
+		font-size: 0.78rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-error);
+		background: rgba(9, 29, 22, 0.92);
+		border: 1px solid rgba(248, 113, 113, 0.4);
+		border-left: 3px solid var(--color-error);
+		backdrop-filter: blur(8px);
+		box-shadow: 0 12px 30px -16px rgba(0, 0, 0, 0.9);
 	}
 </style>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Features from '$lib/components/Features.svelte';
 	import Stats from '$lib/components/Stats.svelte';
+	import BrandMark from '$lib/components/BrandMark.svelte';
 	import { authClient } from '$lib/auth-client';
 	import { goto } from '$app/navigation';
 
@@ -22,67 +23,77 @@
 </script>
 
 <svelte:head>
-	<title>Cantar Ball | Tactical Pitch Dominance</title>
+	<title>Cantar Ball | Pocket Football Club</title>
 </svelte:head>
 
-<!-- Hero Section -->
+<!-- Hero -->
 <section
-	class="hud-scanline relative flex min-h-[85vh] flex-col items-center justify-center px-[24px] text-center"
+	class="cork-felt relative flex min-h-[94vh] flex-col items-center justify-center overflow-hidden px-6 text-center"
 >
-	<!-- Background Visual -->
-	<div class="absolute inset-0 z-0 opacity-30">
-		<div
-			class="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent"
-		></div>
-		<img
-			class="h-full w-full object-cover"
-			alt="Futuristic digital football pitch"
-			src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpOUtbr_S0EAzs45i3-M5Yante5O0rdMEW0u8Hjg4N7I5QuI3DFQZxb-hKBl8DiwmwCCgfoNDKqKxyunLx3EGt1-_4MG05iqyN4dGWp0O-srMt_EWZOIrcXxeZN5rTMk2LFkSUyFPmj_cgbn_2XdSafShOnDgGPmVJMGS4wfnIWTz7XqWpPkBZReQpMxSmSlgEi7_BvFqOSmWdmBNqOKXs6M1G8csFabCb9NRGvPmLcDtSwSN8aG8a-jyWEwyHsKv_GFd1Fl2NAKQ"
-		/>
+	<div class="hero-glow pointer-events-none absolute inset-0" aria-hidden="true"></div>
+
+	<!-- Cork on the centre circle -->
+	<div class="emblem pointer-events-none absolute left-1/2 top-1/2" aria-hidden="true">
+		<svg viewBox="0 0 900 900" fill="none">
+			<circle cx="450" cy="450" r="420" stroke="rgba(255,255,255,0.14)" stroke-width="2" />
+			<circle
+				cx="450"
+				cy="450"
+				r="330"
+				stroke="rgba(246,236,212,0.4)"
+				stroke-width="2"
+				stroke-dasharray="1 14"
+				class="drift"
+			/>
+			<circle cx="450" cy="450" r="120" stroke="rgba(242,169,59,0.18)" stroke-width="2" stroke-dasharray="1 10" />
+		</svg>
+		<div class="emblem-cork-wrap">
+			<BrandMark size={300} className="emblem-cork-brand" />
+		</div>
 	</div>
 
-	<div class="relative z-10 mx-auto max-w-5xl">
-		<div class="mb-4 flex justify-center">
-			<div class="rounded-full border border-primary/30 bg-primary/10 px-4 py-1">
-				<span class="font-jetbrains text-[10px] uppercase tracking-widest text-primary"
-					>Combat Sport Protocol v2.4</span
-				>
-			</div>
+	<div class="relative z-10 mx-auto max-w-4xl py-28">
+		<div class="signal mx-auto mb-8 w-fit">
+			<span class="dot"></span>
+			Kickoff Time · Est. 1967
 		</div>
-		<h1 class="mb-4 text-5xl leading-none tracking-tighter text-white md:text-7xl">
-			CANTAR BALL: <span class="text-primary">TACTICAL PITCH</span> DOMINANCE
+
+		<h1 class="text-[3.4rem] leading-[0.85] tracking-tight md:text-[7rem]">
+			<span class="block text-on-surface">CANTAR</span>
+			<span class="block text-primary">BALL</span>
 		</h1>
-		<p class="mx-auto mb-8 max-w-2xl text-lg text-on-surface-variant">
-			Master the high-stakes intersection of strategic maneuvering and split-second reflexes
-			in the galaxy's premier tactical ball combat arena.
+		<p class="text-outline mt-3 font-space text-lg font-bold uppercase md:text-3xl">
+			Mini pitch. Full heart.
 		</p>
 
-		<div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
-			<button
-				onclick={startSession}
-				disabled={loading}
-				class="group flex items-center gap-2 rounded-none bg-primary px-12 py-4 font-jetbrains text-sm font-bold text-on-primary no-underline transition-all hover:brightness-110 active:scale-95 disabled:opacity-50"
-			>
-				{loading ? 'INITIALIZING...' : $session.data ? 'ENTER THE ARENA' : 'PLAY AS GUEST'}
+		<p class="mx-auto mt-8 max-w-xl text-base leading-relaxed text-on-surface-variant md:text-lg">
+			Two players, one felt pitch, and a couple of bottle corks. Plan your push in the quiet
+			phase, then watch the silly, brilliant physics do their thing.
+		</p>
+
+		<div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+			<button onclick={startSession} disabled={loading} class="btn btn-lg">
+				{loading ? 'Setting up…' : $session.data ? 'Take the Pitch' : 'Play as Guest'}
 				{#if !loading}
-					<span
-						class="material-symbols-outlined transition-transform group-hover:translate-x-1"
-						>bolt</span
-					>
+					<span class="material-symbols-outlined text-[18px]">sports_soccer</span>
 				{/if}
 			</button>
-			<button
-				onclick={() => goto('/lobby')}
-				class="rounded-none border border-outline-variant bg-surface-container/50 px-12 py-4 font-jetbrains text-sm text-white transition-all hover:bg-surface-container"
-			>
-				BROWSE LOBBY
+			<button onclick={() => goto('/lobby')} class="btn-ghost btn-ghost-lg">
+				Browse Pickup Games
 			</button>
 		</div>
 	</div>
 
-	<!-- Scroll Prompt -->
-	<div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
-		<span class="material-symbols-outlined text-outline">expand_more</span>
+	<div class="absolute bottom-7 left-1/2 z-10 -translate-x-1/2">
+		<span class="mono-label block text-center text-[9px]">Scroll to the touchline</span>
+		<div class="scroll-cue mx-auto mt-2"></div>
+	</div>
+
+	<div class="mono-label pointer-events-none absolute top-24 left-6 hidden text-[9px] lg:block">
+		Felt Side A1 · Pocket Pitch
+	</div>
+	<div class="mono-label pointer-events-none absolute right-6 bottom-24 hidden text-[9px] lg:block">
+		Two Corks · No Refs · All Trust
 	</div>
 </section>
 
@@ -90,30 +101,74 @@
 
 <Stats />
 
-<!-- CTA Section -->
-<section class="relative overflow-hidden py-24">
-	<div class="absolute inset-0 z-0">
-		<img
-			class="h-full w-full object-cover opacity-20 grayscale"
-			alt="Digital landscape"
-			src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTcplLhSPjMcgKIp8eQS8tgAszPCxl58NNOUFZ8vmm1hfJ0Ssdzz3OUxv1cLasAg1q4OTSQo_FswrHkmS4ANfzLcicLaluln7-0Z8Frj59M0u1KoupV1XodNK2gIeig__xAWKiN7HyDvPap4iZy16eQcWnf-yFNgTWUReQ6IboQH74XMtjp5ANAS2mT93E_44qoNpGQwflwqrfc_Zb1AVMd9QbjOj2UWLuZtyMy8njDzzIChiXP5NQdwIh8UuTW4V-wf8FVvVWZE4"
-		/>
-	</div>
+<!-- CTA -->
+<section class="relative overflow-hidden py-28">
+	<div class="pitch-bg absolute inset-0" aria-hidden="true"></div>
 	<div
-		class="relative z-10 mx-auto max-w-4xl border-2 border-primary bg-surface/80 p-12 text-center backdrop-blur-md"
-	>
-		<h2 class="mb-6 text-3xl leading-none tracking-tight text-white uppercase">
-			Ready to rewrite the pitch?
+		class="pointer-events-none absolute inset-0 bg-gradient-to-t from-surface via-transparent to-surface"
+		aria-hidden="true"
+	></div>
+
+	<div class="corners panel relative z-10 mx-auto max-w-3xl p-10 text-center md:p-14">
+		<div class="signal mx-auto mb-10 w-fit">
+			<span class="dot"></span>
+			The Fishbowl Is Open
+		</div>
+		<h2 class="mb-6 font-space text-2xl font-bold text-on-surface md:text-4xl">
+			Bring your corks. Stay for the rematch.
 		</h2>
-		<p class="mx-auto mb-8 max-w-xl text-on-surface-variant">
-			Join thousands of commanders in the most sophisticated tactical sports engine ever
-			built. No downloads. Direct browser access.
+		<p class="mx-auto mb-10 max-w-md text-on-surface-variant">
+			No downloads, no sign-up needed. Just pick a pitch, take a side, and give the old
+			tabletop tradition a proper run-around.
 		</p>
-		<button
-			onclick={startSession}
-			class="rounded-none bg-primary px-16 py-5 font-jetbrains text-sm font-bold text-on-primary hover:shadow-[0_0_30px_rgba(217,249,157,0.4)]"
-		>
-			{$session.data ? 'ENTER THE ARENA' : 'PLAY AS GUEST'}
-		</button>
+		<div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
+			<button onclick={startSession} class="btn btn-lg">
+				{$session.data ? 'Take the Pitch' : 'Play as Guest'}
+				<span class="material-symbols-outlined text-[18px]">sports_soccer</span>
+			</button>
+			<a href="/login" class="btn-ghost btn-ghost-lg no-underline">Claim a Name</a>
+		</div>
 	</div>
 </section>
+
+<style>
+	.hero-glow {
+		background: radial-gradient(60% 50% at 50% 44%, rgba(242, 169, 59, 0.12), transparent 62%);
+	}
+
+	.emblem {
+		transform: translate(-50%, -50%);
+		opacity: 0.5;
+	}
+
+	.emblem svg {
+		width: min(108vw, 860px);
+		height: auto;
+		overflow: visible;
+	}
+
+	.emblem-cork-wrap {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: 34%;
+		transform: translate(-50%, -50%);
+	}
+
+	.emblem-cork-wrap :global(.emblem-cork-brand) {
+		width: 100%;
+		height: auto;
+		margin: 0;
+		display: block;
+	}
+
+	.drift {
+		transform-origin: 450px 450px;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.drift {
+			animation: drift 70s linear infinite;
+		}
+	}
+</style>

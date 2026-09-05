@@ -31,22 +31,29 @@
 	<title>Settings | Cantar Ball</title>
 </svelte:head>
 
-<div class="mx-auto max-w-2xl space-y-8">
-	<header>
-		<h1 class="font-display-lg text-4xl text-on-surface">Settings</h1>
-		<p class="mt-2 text-on-surface-variant">Manage your account and preferences.</p>
+<div class="mx-auto max-w-2xl space-y-6">
+	<header class="mb-8">
+		<div class="signal mb-4 w-fit">
+			<span class="dot"></span>
+			Manager's Office
+		</div>
+		<h1 class="font-space text-4xl font-bold tracking-tighter text-on-surface">Team Setup</h1>
+		<p class="mt-2 text-on-surface-variant">Tidy your kit and your account.</p>
 	</header>
 
-	<!-- Profile Section -->
-	<section class="glass-panel border border-outline-variant/30 p-6">
-		<h2 class="font-jetbrains mb-6 text-xs uppercase tracking-widest text-on-surface-variant">
-			Profile
-		</h2>
+	<!-- Profile -->
+	<section class="panel p-6">
+		<div class="mb-6 flex items-center justify-between">
+			<h2 class="mono-label text-[10px]">Player Profile</h2>
+			<span class="font-jetbrains text-[10px] text-on-surface-variant/70">SHIRT_001</span>
+		</div>
 
 		{#if $session.data}
 			<div class="space-y-6">
 				<div class="flex items-center gap-4">
-					<div class="h-16 w-16 overflow-hidden rounded-full border-2 border-primary">
+					<div
+						class="h-16 w-16 shrink-0 overflow-hidden rounded-full border-2 border-primary shadow-[0_0_18px_rgba(242,169,59,0.25)]"
+					>
 						<img
 							alt="Avatar"
 							class="h-full w-full object-cover"
@@ -55,33 +62,31 @@
 						/>
 					</div>
 					<div>
-						<div class="font-display-lg text-lg font-bold text-on-surface">
+						<div class="font-space text-lg font-bold text-on-surface">
 							{$session.data.user.name}
 						</div>
-						<div class="font-label-caps text-[10px] uppercase text-on-surface-variant">
-							{$session.data.user.isAnonymous ? 'Guest Account' : 'Registered'}
+						<div class="mono-label text-[8px]">
+							{$session.data.user.isAnonymous ? 'Guest Goalkeeper' : 'Registered Player'}
 						</div>
 					</div>
 				</div>
 
 				<div class="space-y-2">
-					<label for="name" class="font-label-caps text-[10px] uppercase text-on-surface-variant">
-						Display Name
-					</label>
+					<label for="name" class="mono-label block text-[8px]">Name on the Sheet</label>
 					<div class="flex gap-3">
 						<input
 							id="name"
 							bind:value={newName}
 							placeholder={$session.data.user.name}
 							onkeydown={(e) => e.key === 'Enter' && updateName()}
-							class="flex-grow"
+							class="min-w-0 flex-1"
 						/>
 						<button
 							onclick={updateName}
 							disabled={saving || !newName.trim()}
-							class="bg-primary px-6 py-2 font-label-caps text-[12px] font-bold uppercase text-on-primary transition-all hover:brightness-110 active:scale-95 disabled:opacity-50"
+							class="btn shrink-0"
 						>
-							{saved ? 'Saved!' : saving ? 'Saving...' : 'Save'}
+							{saved ? 'Saved' : saving ? 'Saving…' : 'Save'}
 						</button>
 					</div>
 				</div>
@@ -91,17 +96,20 @@
 		{/if}
 	</section>
 
-	<!-- Account Section -->
-	<section class="glass-panel border border-outline-variant/30 p-6">
-		<h2 class="font-jetbrains mb-6 text-xs uppercase tracking-widest text-on-surface-variant">
-			Account
-		</h2>
+	<!-- Account -->
+	<section class="panel p-6">
+		<div class="mb-6 flex items-center justify-between">
+			<h2 class="mono-label text-[10px]">Account</h2>
+			<span class="material-symbols-outlined text-[18px] text-on-surface-variant/70"
+				>security</span
+			>
+		</div>
 		<button
 			onclick={logout}
-			class="flex items-center gap-3 border border-error/30 px-6 py-3 font-label-caps text-[12px] uppercase text-error transition-all hover:bg-error/10 cursor-pointer"
+			class="flex items-center gap-3 border border-error/30 px-6 py-3 font-jetbrains text-[11px] tracking-[0.18em] text-error uppercase transition-colors duration-200 hover:bg-error/10"
 		>
-			<span class="material-symbols-outlined text-[18px]">logout</span>
-			Sign Out
+			<span class="material-symbols-outlined text-[18px]">meeting_room</span>
+			Head Home
 		</button>
 	</section>
 </div>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { authClient } from '$lib/auth-client';
 	import { goto } from '$app/navigation';
+	import BrandMark from '$lib/components/BrandMark.svelte';
 
 	let email = $state('');
 	let loading = $state(false);
@@ -37,63 +38,64 @@
 	}
 </script>
 
-<div class="mx-auto mt-20 max-w-md border-t-4 border-primary p-8 glass-panel">
-	<h1 class="mb-8 text-center font-display-lg text-3xl uppercase">Join the Arena</h1>
+<svelte:head>
+	<title>Join the Club | Cantar Ball</title>
+</svelte:head>
 
-	<div class="space-y-4">
-		<button
-			onclick={loginWithGoogle}
-			class="flex w-full items-center justify-center gap-3 border border-outline/30 p-3 transition-all hover:bg-surface-container"
-		>
-			<img src="https://www.google.com/favicon.ico" class="h-5 w-5" alt="Google" />
-			Continue with Google
-		</button>
-
-		<button
-			onclick={loginWithGithub}
-			class="flex w-full items-center justify-center gap-3 border border-outline/30 p-3 transition-all hover:bg-surface-container"
-		>
-			<img src="https://github.com/favicon.ico" class="h-5 w-5" alt="GitHub" />
-			Continue with GitHub
-		</button>
-
-		<div class="relative py-4">
-			<div class="absolute inset-0 flex items-center">
-				<div class="w-full border-t border-outline/20"></div>
-			</div>
-			<div class="relative flex justify-center text-xs uppercase">
-				<span class="bg-surface px-2 text-on-surface-variant">Or Magic Link</span>
-			</div>
+<div class="mx-auto mt-4 max-w-md">
+	<div class="corners panel p-8">
+		<div class="mb-8 flex flex-col items-center gap-3 text-center">
+			<BrandMark size={44} />
+			<h1 class="font-space text-2xl font-bold tracking-tight text-on-surface uppercase">
+				Join the Club
+			</h1>
+			<p class="mono-label text-[8px] text-primary/80">Roll Call · Manager's Office</p>
 		</div>
 
-		<input bind:value={email} placeholder="EMAIL ADDRESS" class="w-full" />
-		<button
-			onclick={loginWithMagicLink}
-			disabled={loading || !email}
-			class="w-full bg-primary p-3 font-bold uppercase text-on-primary disabled:opacity-50"
-		>
-			{loading ? 'Sending...' : 'Send Magic Link'}
-		</button>
+		<div class="space-y-3">
+			<button onclick={loginWithGoogle} class="btn-ghost w-full justify-start py-3">
+				<img src="https://www.google.com/favicon.ico" class="h-4 w-4" alt="Google" />
+				Continue with Google
+			</button>
 
-		{#if message}
-			<p class="font-jetbrains mt-4 text-center text-sm uppercase text-primary">{message}</p>
-		{/if}
+			<button onclick={loginWithGithub} class="btn-ghost w-full justify-start py-3">
+				<img src="https://github.com/favicon.ico" class="h-4 w-4" alt="GitHub" />
+				Continue with GitHub
+			</button>
 
-		<div class="relative py-4">
-			<div class="absolute inset-0 flex items-center">
-				<div class="w-full border-t border-outline/20"></div>
+			<div class="relative py-3">
+				<div class="absolute inset-0 flex items-center">
+					<div class="w-full border-t border-outline/20"></div>
+				</div>
+				<div class="relative flex justify-center">
+					<span class="mono-label bg-surface px-3 text-[8px]">Or Magic Link</span>
+				</div>
 			</div>
-			<div class="relative flex justify-center text-xs uppercase">
-				<span class="bg-surface px-2 text-on-surface-variant">Jump In</span>
+
+			<input bind:value={email} placeholder="Email address" class="w-full" />
+			<button onclick={loginWithMagicLink} disabled={loading || !email} class="btn w-full">
+				{loading ? 'Sending…' : 'Send Magic Link'}
+			</button>
+
+			{#if message}
+				<p class="mono-label mt-4 text-center text-[10px] normal-case text-primary">
+					{message}
+				</p>
+			{/if}
+
+			<div class="relative py-3">
+				<div class="absolute inset-0 flex items-center">
+					<div class="w-full border-t border-outline/20"></div>
+				</div>
+				<div class="relative flex justify-center">
+					<span class="mono-label bg-surface px-3 text-[8px]">Jump In</span>
+				</div>
 			</div>
+
+			<button onclick={loginAsGuest} disabled={loading} class="btn-ghost w-full">
+				<span class="material-symbols-outlined text-[18px] text-primary">bolt</span>
+				Play as Guest
+			</button>
 		</div>
-
-		<button
-			onclick={loginAsGuest}
-			disabled={loading}
-			class="w-full border border-primary p-3 font-bold uppercase text-primary transition-all hover:bg-primary/10"
-		>
-			Play as Guest
-		</button>
 	</div>
 </div>

@@ -116,19 +116,35 @@
 		const fh = y1 - y0;
 
 		// Background outside field
-		ctx.fillStyle = '#1b3a18';
+		ctx.fillStyle = '#0a241b';
 		ctx.fillRect(0, 0, CANVAS.WIDTH, CANVAS.HEIGHT);
 
-		// Alternating grass stripes
+		// Faint chalk grid on the surrounding apron (felt HUD motif)
+		ctx.strokeStyle = 'rgba(246, 236, 212, 0.04)';
+		ctx.lineWidth = 1;
+		for (let gx = x0; gx < x1; gx += 16) {
+			ctx.beginPath();
+			ctx.moveTo(gx, y0);
+			ctx.lineTo(gx, y1);
+			ctx.stroke();
+		}
+		for (let gy = y0; gy < y1; gy += 16) {
+			ctx.beginPath();
+			ctx.moveTo(x0, gy);
+			ctx.lineTo(x1, gy);
+			ctx.stroke();
+		}
+
+		// Alternating felt stripes
 		const STRIPE_COUNT = 10;
 		const stripeW = fw / STRIPE_COUNT;
 		for (let i = 0; i < STRIPE_COUNT; i++) {
-			ctx.fillStyle = i % 2 === 0 ? '#2d5a27' : '#265122';
+			ctx.fillStyle = i % 2 === 0 ? '#2b6d4c' : '#256342';
 			ctx.fillRect(x0 + i * stripeW, y0, stripeW, fh);
 		}
 
 		// Field border
-		ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+		ctx.strokeStyle = 'rgba(246, 236, 212, 0.5)';
 		ctx.lineWidth = 2;
 		ctx.strokeRect(x0, y0, fw, fh);
 
@@ -139,7 +155,7 @@
 		ctx.beginPath();
 		ctx.moveTo(clx, cly0);
 		ctx.lineTo(clx, cly1);
-		ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+		ctx.strokeStyle = 'rgba(246, 236, 212, 0.45)';
 		ctx.lineWidth = 1.5;
 		ctx.stroke();
 
@@ -147,14 +163,14 @@
 		const { x: ccx, y: ccy } = fieldToCanvas(FIELD.CENTER_X, FIELD.CENTER_Y);
 		ctx.beginPath();
 		ctx.arc(ccx, ccy, FIELD.CENTER_RADIUS * SCALE_R, 0, Math.PI * 2);
-		ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+		ctx.strokeStyle = 'rgba(246, 236, 212, 0.45)';
 		ctx.lineWidth = 1.5;
 		ctx.stroke();
 
 		// Center dot
 		ctx.beginPath();
 		ctx.arc(ccx, ccy, 3, 0, Math.PI * 2);
-		ctx.fillStyle = 'rgba(255,255,255,0.4)';
+		ctx.fillStyle = 'rgba(246, 236, 212, 0.5)';
 		ctx.fill();
 
 		drawGoal(0);
@@ -170,15 +186,15 @@
 
 		const rx = isHome ? gx - depth : gx;
 
-		ctx.strokeStyle = '#fff';
+		ctx.strokeStyle = 'rgba(246, 236, 212, 0.9)';
 		ctx.lineWidth = 3;
 		ctx.strokeRect(rx, gy, depth, gh);
 
-		ctx.fillStyle = 'rgba(255, 255, 255, 0.07)';
+		ctx.fillStyle = 'rgba(246, 236, 212, 0.06)';
 		ctx.fillRect(rx, gy, depth, gh);
 
 		// Net grid
-		ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+		ctx.strokeStyle = 'rgba(246, 236, 212, 0.14)';
 		ctx.lineWidth = 0.5;
 		for (let nx = rx; nx < rx + depth; nx += depth / 3) {
 			ctx.beginPath(); ctx.moveTo(nx, gy); ctx.lineTo(nx, gy2); ctx.stroke();
@@ -201,9 +217,9 @@
 		ctx.save();
 		ctx.beginPath();
 		ctx.arc(x, y, maxDist * SCALE_R, 0, Math.PI * 2);
-		ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+		ctx.fillStyle = 'rgba(246, 236, 212, 0.06)';
 		ctx.fill();
-		ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+		ctx.strokeStyle = 'rgba(246, 236, 212, 0.32)';
 		ctx.setLineDash([4, 4]);
 		ctx.lineWidth = 1.5;
 		ctx.stroke();
@@ -232,11 +248,11 @@
 
 			const grad = ctx.createRadialGradient(x - radius * 0.3, y - radius * 0.3, 0, x, y, radius);
 			if (isHome) {
-				grad.addColorStop(0, isSelected ? '#80d8ff' : isHovered ? '#4fc3f7' : '#2196f3');
-				grad.addColorStop(1, isSelected ? '#0277bd' : '#01579b');
+				grad.addColorStop(0, isSelected ? '#8fd6ff' : isHovered ? '#60c0ff' : '#41b3ff');
+				grad.addColorStop(1, isSelected ? '#1264b0' : '#175e9e');
 			} else {
-				grad.addColorStop(0, isSelected ? '#ffccbc' : isHovered ? '#ff8a65' : '#ff5722');
-				grad.addColorStop(1, isSelected ? '#bf360c' : '#7f0000');
+				grad.addColorStop(0, isSelected ? '#ffab93' : isHovered ? '#ff8866' : '#ff7850');
+				grad.addColorStop(1, isSelected ? '#c23a12' : '#a83408');
 			}
 
 			ctx.beginPath();
@@ -248,7 +264,7 @@
 			if (isGoalie) {
 				ctx.beginPath();
 				ctx.arc(x, y, radius, 0, Math.PI * 2);
-				ctx.strokeStyle = isHome ? '#ffd54f' : '#b2ff59';
+				ctx.strokeStyle = isHome ? '#f6d15c' : '#d7f27a';
 				ctx.lineWidth = 2;
 				ctx.stroke();
 			}
@@ -256,7 +272,7 @@
 			if (isSelected) {
 				ctx.beginPath();
 				ctx.arc(x, y, radius + 3, 0, Math.PI * 2);
-				ctx.strokeStyle = '#fff';
+				ctx.strokeStyle = '#f2a93b';
 				ctx.lineWidth = 2;
 				ctx.stroke();
 			}
@@ -264,12 +280,12 @@
 			if (isHovered && isMyPiece && isMyTurn) {
 				ctx.beginPath();
 				ctx.arc(x, y, radius + 2, 0, Math.PI * 2);
-				ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+				ctx.strokeStyle = 'rgba(246,236,212,0.55)';
 				ctx.lineWidth = 1.5;
 				ctx.stroke();
 			}
 
-			ctx.fillStyle = '#fff';
+			ctx.fillStyle = '#10231b';
 			ctx.font = `bold ${Math.max(8, radius * 0.85)}px sans-serif`;
 			ctx.textAlign = 'center';
 			ctx.textBaseline = 'middle';
@@ -290,9 +306,9 @@
 		ctx.shadowOffsetY = 4;
 
 		const grad = ctx.createRadialGradient(x - r * 0.3, y - r * 0.4, 0, x, y, r);
-		grad.addColorStop(0, '#ffffff');
-		grad.addColorStop(0.6, '#dddddd');
-		grad.addColorStop(1, '#aaaaaa');
+		grad.addColorStop(0, '#fffdf5');
+		grad.addColorStop(0.6, '#f3e9d8');
+		grad.addColorStop(1, '#cdbfa6');
 
 		ctx.beginPath();
 		ctx.arc(x, y, r, 0, Math.PI * 2);
@@ -304,6 +320,17 @@
 		ctx.arc(x, y, r, 0, Math.PI * 2);
 		ctx.strokeStyle = 'rgba(0,0,0,0.3)';
 		ctx.lineWidth = 0.8;
+		ctx.stroke();
+
+		// Cork button on the ball
+		ctx.beginPath();
+		ctx.arc(x, y, r * 0.34, 0, Math.PI * 2);
+		ctx.fillStyle = 'rgba(242, 169, 59, 0.42)';
+		ctx.fill();
+		ctx.beginPath();
+		ctx.arc(x, y, r * 0.34, 0, Math.PI * 2);
+		ctx.strokeStyle = 'rgba(160, 108, 30, 0.5)';
+		ctx.lineWidth = 0.6;
 		ctx.stroke();
 	}
 
@@ -323,7 +350,7 @@
 		ctx.beginPath();
 		ctx.moveTo(fx, fy);
 		ctx.lineTo(tx, ty);
-		ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+		ctx.strokeStyle = 'rgba(242, 169, 59, 0.7)';
 		ctx.setLineDash([5, 5]);
 		ctx.lineWidth = 2;
 		ctx.stroke();
@@ -331,7 +358,7 @@
 
 		ctx.beginPath();
 		ctx.arc(tx, ty, 5, 0, Math.PI * 2);
-		ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+		ctx.fillStyle = 'rgba(246, 236, 212, 0.9)';
 		ctx.fill();
 		ctx.strokeStyle = 'rgba(0,0,0,0.3)';
 		ctx.lineWidth = 1;
@@ -369,7 +396,7 @@
 
 		ctx.save();
 		ctx.setLineDash([3, 5]);
-		ctx.strokeStyle = 'rgba(255, 220, 80, 0.5)';
+		ctx.strokeStyle = 'rgba(255, 207, 92, 0.55)';
 		ctx.lineWidth = 1.5;
 		ctx.beginPath();
 
@@ -403,7 +430,7 @@
 		ctx.lineTo(-size, -size / 2);
 		ctx.lineTo(-size, size / 2);
 		ctx.closePath();
-		ctx.fillStyle = 'rgba(255, 220, 80, 0.7)';
+		ctx.fillStyle = 'rgba(255, 207, 92, 0.75)';
 		ctx.fill();
 		ctx.restore();
 	}
@@ -517,12 +544,12 @@
 
 	<div class="help">
 		{#if !gameState}
-			<span>Waiting for opponent ({playerCount}/2)…</span>
+			<span>Waiting for the other manager ({playerCount}/2)…</span>
 		{:else if isMyTurn}
 			{#if !gameState.kickoffDone}
-				<strong>Kickoff!</strong> Hit the ball towards your side.
+				<strong>Kickoff!</strong> Nudge the ball out from the centre.
 			{:else}
-				<span>Click and drag a piece to move it.</span>
+				<span>Flick your cork: press, drag, release.</span>
 			{/if}
 		{:else}
 			<span>Opponent is thinking…</span>
@@ -547,13 +574,17 @@
 	}
 
 	.help {
-		font-size: 0.85rem;
-		color: #888;
+		font-family: var(--font-jetbrains);
+		font-size: 0.75rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--color-on-surface-variant);
 		text-align: center;
 		min-height: 1.2rem;
 	}
 
 	.help strong {
-		color: #ffd54f;
+		color: var(--color-primary);
+		font-weight: 700;
 	}
 </style>

@@ -5,6 +5,7 @@ import * as schema from './db/schema';
 import { eq, desc, sql, count, or } from 'drizzle-orm';
 
 export function getDb(env: Env) {
+	console.log(env);
 	const client = createClient({
 		url: env.TURSO_URL!,
 		authToken: env.TURSO_AUTH_TOKEN,

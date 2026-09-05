@@ -73,66 +73,55 @@
 </script>
 
 <svelte:head>
-	<title>Lobby | Cantar Ball</title>
+	<title>Pickup Matches | Cantar Ball</title>
 </svelte:head>
 
 <div class="flex flex-col gap-8 lg:flex-row">
-	<!-- Room List Section -->
-	<div class="flex-grow">
-		<header class="mb-8 flex items-end justify-between">
+	<!-- Match List -->
+	<div class="min-w-0 flex-grow">
+		<header class="mb-8 flex items-end justify-between gap-6">
 			<div>
-				<div
-					class="mb-2 inline-block border-l-2 border-primary bg-surface-container px-3 py-1"
-				>
-					<span
-						class="status-blink font-label-caps text-[12px] uppercase tracking-[0.2em] text-primary"
-						>Live_Server_Synced</span
-					>
+				<div class="signal mb-4 w-fit">
+					<span class="dot"></span>
+					The Fishbowl · Match Day
 				</div>
-				<h1 class="font-display-lg text-4xl text-on-surface md:text-5xl">Tactical Lobby</h1>
+				<h1 class="font-space text-3xl font-bold text-on-surface md:text-5xl">
+					Pickup Matches
+				</h1>
 			</div>
 			<div class="hidden gap-4 md:flex">
-				<div class="glass-panel flex flex-col items-center px-6 py-2">
-					<span class="font-label-caps text-[10px] uppercase text-on-surface-variant"
-						>Online</span
-					>
-					<span class="font-jetbrains text-xl text-primary"
+				<div class="panel corners flex flex-col items-center px-6 py-3">
+					<span class="mono-label text-[8px]">On the Pitch</span>
+					<span class="mt-1 font-jetbrains text-xl text-primary"
 						>{onlineCount.toLocaleString()}</span
 					>
 				</div>
-				<div class="glass-panel flex flex-col items-center px-6 py-2">
-					<span class="font-label-caps text-[10px] uppercase text-on-surface-variant"
-						>Rooms</span
-					>
-					<span class="font-jetbrains text-xl text-primary">{rooms.length}</span>
+				<div class="panel corners flex flex-col items-center px-6 py-3">
+					<span class="mono-label text-[8px]">Open Games</span>
+					<span class="mt-1 font-jetbrains text-xl text-primary">{rooms.length}</span>
 				</div>
 			</div>
 		</header>
 
 		<div class="space-y-4">
-			<!-- Create Room Section -->
-			<div class="glass-panel border-l-4 border-primary bg-surface-container/30 p-6">
-				<div class="mb-4 flex items-center justify-between">
-					<h3 class="font-display-lg text-lg uppercase tracking-tight text-on-surface">
-						Initialize New Tactical Grid
+			<!-- Host a match -->
+			<div class="panel border-primary/60 p-6">
+				<div class="mb-4 flex items-center justify-between gap-4">
+					<h3 class="font-space text-lg font-bold text-on-surface">
+						Host a Pickup Match
 					</h3>
-					<span class="font-label-caps text-[10px] uppercase text-primary"
-						>Priority_Alpha</span
-					>
+					<span class="mono-label text-[8px] text-primary/80">Host's Honour</span>
 				</div>
 				<div class="flex flex-col gap-4 md:flex-row">
 					<input
 						bind:value={newRoomName}
-						placeholder="ENTER GRID IDENTIFIER..."
+						placeholder="Name your pitch…"
 						onkeydown={(e) => e.key === 'Enter' && createRoom()}
-						class="flex-grow"
+						class="min-w-0 flex-1"
 					/>
-					<button
-						onclick={createRoom}
-						disabled={creating}
-						class="bg-primary px-10 py-3 font-display-lg text-sm font-bold uppercase tracking-tighter text-on-primary transition-all hover:brightness-110 active:scale-95 disabled:opacity-50"
-					>
-						{creating ? 'Initializing...' : 'Start Session'}
+					<button onclick={createRoom} disabled={creating} class="btn md:shrink-0">
+						{creating ? 'Laying the felt…' : 'Stick the Cones'}
+						<span class="material-symbols-outlined text-[18px]">sports_soccer</span>
 					</button>
 				</div>
 			</div>
@@ -143,89 +132,98 @@
 					onkeydown={(e) => e.key === 'Enter' && joinRoom(room.id)}
 					role="button"
 					tabindex="0"
-					class="glass-panel group relative cursor-pointer overflow-hidden p-1 transition-all hover:border-primary/50"
+					class="panel corners group flex cursor-pointer flex-col gap-4 p-5 transition-colors duration-300 hover:border-primary/40 sm:flex-row sm:items-center"
 				>
-					<div
-						class="absolute inset-0 bg-primary/5 opacity-0 transition-opacity group-hover:opacity-100"
-					></div>
-					<div
-						class="relative z-10 flex flex-col gap-4 p-4 md:flex-row md:items-center justify-between"
-					>
-						<div class="flex items-center gap-4">
-							<div
-								class="flex h-12 w-12 items-center justify-center border border-outline/30 bg-surface-container-high"
-							>
-								<span
-									class="material-symbols-outlined text-on-surface-variant transition-colors group-hover:text-primary"
-									>sports_soccer</span
-								>
-							</div>
-							<div>
-								<div
-									class="font-display-lg text-body-md font-bold uppercase tracking-tight text-on-surface"
-								>
-									{room.name}
-								</div>
-								<div class="mt-1 flex gap-4">
-									<span
-										class="font-label-caps flex items-center gap-1 text-[10px] uppercase text-on-surface-variant"
-									>
-										<span class="material-symbols-outlined text-[14px]"
-											>person</span
-										>
-										{room.player_count}/2
-									</span>
-								</div>
-							</div>
+					<div class="flex min-w-0 items-center gap-4">
+						<div
+							class="icon-tile shrink-0 transition-colors duration-300 group-hover:border-primary group-hover:bg-primary group-hover:text-on-primary"
+						>
+							<span class="material-symbols-outlined">sports_soccer</span>
 						</div>
-						<div class="flex items-center gap-4 px-4">
-							<button
-								class="border border-outline bg-transparent px-8 py-3 font-label-caps text-[12px] uppercase text-on-surface transition-all hover:bg-primary hover:text-on-primary"
+						<div class="min-w-0">
+							<div
+								class="truncate font-space text-base font-bold tracking-tight text-on-surface uppercase transition-colors duration-300 group-hover:text-primary"
 							>
-								Join
-							</button>
+								{room.name}
+							</div>
+							<div class="mt-1 flex items-center gap-4">
+								<span
+									class="mono-label flex items-center gap-1.5 text-[9px] normal-case"
+								>
+									<span class="material-symbols-outlined text-[13px]">person</span>
+									{room.player_count}/2
+								</span>
+								<span class="mono-label hidden items-center gap-1.5 text-[9px] normal-case sm:flex">
+									<span class="material-symbols-outlined text-[13px]">flag</span>
+									PITCH-{room.id.slice(0, 6)}
+								</span>
+							</div>
 						</div>
 					</div>
+
+					<span
+						class="mono-label flex items-center justify-center gap-1.5 border border-outline/40 px-6 py-3 text-[10px] transition-colors duration-300 group-hover:border-primary group-hover:bg-primary group-hover:text-on-primary sm:ml-auto"
+					>
+						Join
+						<span class="material-symbols-outlined text-[15px]">arrow_right_alt</span>
+					</span>
 				</div>
 			{:else}
-				<div class="glass-panel p-8 text-center font-jetbrains text-on-surface-variant">
-					NO ACTIVE GRIDS DETECTED. INITIALIZE A NEW COMBAT SESSION.
+				<div class="panel flex flex-col items-center gap-3 border-dashed p-10 text-center">
+					<span class="material-symbols-outlined text-3xl text-on-surface-variant/70"
+						>corners</span
+					>
+					<p class="mono-label mt-2 text-[11px] text-on-surface-variant">
+						No pickup games yet
+					</p>
+					<p class="text-sm text-on-surface-variant">
+						Lay the felt and be the first to host a match tonight.
+					</p>
+					<button onclick={createRoom} class="btn btn-sm mt-2">Host the First Match</button>
 				</div>
 			{/each}
 		</div>
 	</div>
 
-	<!-- Sidebar Leaderboard -->
+	<!-- Local Legends -->
 	<aside class="w-full space-y-8 lg:w-80">
-		<section class="glass-panel border-t-4 border-t-primary p-6">
-			<h2
-				class="font-display-lg text-body-md mb-6 flex items-center gap-2 border-b border-outline/20 pb-4 font-bold uppercase tracking-widest text-on-surface"
+		<section class="panel corners overflow-hidden">
+			<header
+				class="flex items-center justify-between border-b border-outline/20 bg-primary/5 px-6 py-4"
 			>
-				<span class="material-symbols-outlined text-primary">military_tech</span> Leaderboard
-			</h2>
+				<h2 class="font-space text-sm font-bold tracking-widest text-on-surface uppercase">
+					Local Legends
+				</h2>
+				<span class="material-symbols-outlined text-primary">military_tech</span>
+			</header>
+
 			{#if leaderboard.length > 0}
-				<div class="space-y-4">
+				<ol class="divide-y divide-outline/10">
 					{#each leaderboard as entry, i}
-						<div class="group flex items-center justify-between">
-							<div class="flex items-center gap-3">
-								<span class="font-jetbrains text-sm {i === 0 ? 'text-primary' : 'text-on-surface-variant'}">
-									{String(i + 1).padStart(2, '0')}
-								</span>
+						<li
+							class="flex items-center justify-between px-6 py-4 transition-colors duration-200 hover:bg-surface-container/60"
+						>
+							<div class="flex items-center gap-4">
 								<span
-									class="font-body-md text-sm font-semibold text-on-surface transition-colors group-hover:text-primary"
+									class="font-jetbrains text-sm {i === 0
+										? 'text-primary'
+										: 'text-on-surface-variant/70'}"
+									>{String(i + 1).padStart(2, '0')}</span
+								>
+								<span class="text-sm font-medium text-on-surface"
 									>{entry.playerName}</span
 								>
 							</div>
 							<span class="font-jetbrains text-sm text-on-surface"
-								>{entry.wins} <span class="font-label-caps text-[10px] text-on-surface-variant"
+								>{entry.wins}<span class="mono-label ml-1 text-[8px] text-on-surface-variant/70"
 									>W</span
 								></span
 							>
-						</div>
+						</li>
 					{/each}
-				</div>
+				</ol>
 			{:else}
-				<p class="text-center text-sm text-on-surface-variant">
+				<p class="px-6 py-10 text-center text-sm text-on-surface-variant">
 					No matches played yet.
 				</p>
 			{/if}
